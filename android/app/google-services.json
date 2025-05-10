@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "850687054205",
+    "project_id": "secvault-aaa90",
+    "storage_bucket": "secvault-aaa90.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:850687054205:android:9d5c68c0996562c1827c14",
+        "android_client_info": {
+          "package_name": "darcode.secvault.secvault"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9QMvXrNDEUZF7S5P5kA9Uxl5A3RFG3E4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
