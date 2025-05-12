@@ -1,1 +1,22 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"secvault-aaa90","appId":"1:850687054205:android:9d5c68c0996562c1827c14","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"secvault-aaa90","configurations":{"android":"1:850687054205:android:9d5c68c0996562c1827c14","ios":"1:850687054205:ios:728b135da81ea97e827c14"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "secvault-aaa90",
+          "appId": "1:850687054205:android:9d5c68c0996562c1827c14",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "secvault-aaa90",
+          "configurations": {
+            "android": "1:850687054205:android:9d5c68c0996562c1827c14",
+            "ios": "1:850687054205:ios:728b135da81ea97e827c14"
+          }
+        }
+      }
+    }
+  }
+}
