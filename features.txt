@@ -1,0 +1,73 @@
+🔐 1. Auth (Authentification)
+Connexion / inscription
+
+Déconnexion
+
+Réinitialisation de mot de passe
+
+Authentification biométrique (bonus)
+
+📁 Dossier : features/auth/
+
+🏛️ 2. Vaults (Coffres)
+Création de coffres
+
+Listing des coffres accessibles
+
+Gestion des métadonnées (nom, image, description)
+
+Suppression d’un coffre (admin only)
+
+📁 Dossier : features/vaults/
+
+👥 3. AccessControl (Gestion des accès)
+Inviter un utilisateur à un coffre
+
+Attribuer un rôle : owner, admin, reader
+
+Révoquer ou modifier un accès
+
+Voir la liste des membres d’un coffre
+
+📁 Dossier : features/access_control/
+
+📁 4. Files (Fichiers sécurisés)
+Upload de fichiers (PDF, txt…)
+
+Téléchargement avec déchiffrement local
+
+Suppression d’un fichier
+
+Liste des fichiers d’un coffre
+
+Gestion du chiffrement (via flutter_secure_storage ou encrypt)
+
+📁 Dossier : features/files/
+
+📊 5. Audit (Historique d’activité)
+Voir les logs d’un coffre : qui a lu, écrit, supprimé, etc.
+
+Filtrer par utilisateur ou action
+
+Limiter l’accès aux admins uniquement
+
+📁 Dossier : features/audit/
+
+🔔 6. Notifications (optionnel, bonus)
+Recevoir une alerte quand un fichier est ajouté
+
+Notification quand un membre rejoint/quitte un coffre
+
+📁 Dossier : features/notifications/
+
+🧑‍💼 7. Profile (Profil utilisateur)
+Voir et modifier son nom, email, photo
+
+Voir les coffres dont on est membre
+
+📁 Dossier : features/profile/
+
+🧱 Dossiers transversaux
+core/ : erreurs, thèmes, styles, helpers, etc.
+
+shared/ : widgets et utilitaires réutilisables

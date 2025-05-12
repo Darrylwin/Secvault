@@ -1,0 +1,53 @@
+🧱 1. Vault (Coffre)
+Représente un conteneur sécurisé dans lequel on peut stocker des fichiers.
+| Champ       | Type       | Description                  |
+| ----------- | ---------- | ---------------------------- |
+| `id`        | `String`   | Identifiant unique           |
+| `name`      | `String`   | Nom du coffre                |
+| `ownerId`   | `String`   | ID de l'utilisateur créateur |
+| `createdAt` | `DateTime` | Date de création             |
+
+👤 2. User (Utilisateur)
+Un membre qui peut posséder ou être invité à un coffre.
+| Champ   | Type     | Description    |
+| ------- | -------- | -------------- |
+| `id`    | `String` | ID utilisateur |
+| `email` | `String` | Email (login)  |
+| `name`  | `String` | Nom affiché    |
+
+🔐 3. VaultAccess (Accès au coffre)
+Lien entre un utilisateur et un coffre, avec un rôle.
+| Champ       | Type       | Description                |
+| ----------- | ---------- | -------------------------- |
+| `vaultId`   | `String`   | Coffre concerné            |
+| `userId`    | `String`   | Utilisateur concerné       |
+| `role`      | `enum`     | `owner`, `admin`, `reader` |
+| `grantedAt` | `DateTime` | Date d'attribution         |
+
+📁 4. SecretFile (Fichier sécurisé)
+Un fichier confidentiel stocké dans un coffre.
+| Champ           | Type       | Description                      |
+| --------------- | ---------- | -------------------------------- |
+| `id`            | `String`   | ID unique                        |
+| `vaultId`       | `String`   | Lien vers le coffre parent       |
+| `fileName`      | `String`   | Nom du fichier                   |
+| `encryptedData` | `String`   | Données chiffrées (base64, etc.) |
+| `uploadedAt`    | `DateTime` | Date d’envoi                     |
+
+📜 5. AuditLog (Historique d'accès)
+Journal des actions effectuées sur un coffre ou un fichier.
+| Champ       | Type       | Description                       |
+| ----------- | ---------- | --------------------------------- |
+| `id`        | `String`   | ID log                            |
+| `vaultId`   | `String`   | Coffre concerné                   |
+| `userId`    | `String`   | Utilisateur qui a agi             |
+| `action`    | `String`   | `read_file`, `upload_file`, etc.  |
+| `targetId`  | `String`   | ID du fichier ou ressource ciblée |
+| `timestamp` | `DateTime` | Date et heure                     |
+
+
+enum VaultRole {
+  owner,
+  admin,
+  reader,
+}

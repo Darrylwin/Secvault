@@ -1,0 +1,22 @@
+features/auth/
+├── data/
+│   ├── models/user_model.dart
+│   ├── datasources/auth_remote_datasource.dart
+│   └── repositories_impl/auth_repository_impl.dart
+│
+├── domain/
+│   ├── entities/user.dart
+│   ├── repositories/auth_repository.dart
+│   └── usecases/
+│       ├── login.dart
+│       ├── register.dart
+│       ├── logout.dart
+│       └── get_current_user.dart
+│
+└── presentation/
+    ├── bloc/auth_bloc.dart
+    ├── screens/
+    │   ├── login_page.dart
+    │   └── register_page.dart
+    └── widgets/
+        └── login_form.dart
