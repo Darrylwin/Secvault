@@ -1,11 +1,11 @@
 class User {
-  late final int id;
+  late final int uid;
   String email;
   String name;
 
-  User(
-    this.id,
-    this.email,
-    this.name,
-  );
+  User({
+    required this.uid,
+    required this.email,
+    required this.name,
+  });
 }
