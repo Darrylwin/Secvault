@@ -40,8 +40,12 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await _authRemoteDatasource.logout();
       return const Right(null);
+    } on FirebaseAuthException catch (error) {
+      return Left(AuthFailure(error.message ?? "Error when loging out"));
+    } on SocketException {
+      return Left(AuthFailure.network());
     } catch (error) {
-      return const Left(AuthFailure("Logout failed"));
+      return Left(AuthFailure.unknown());
     }
   }
 
@@ -54,7 +58,18 @@ class AuthRepositoryImpl implements AuthRepository {
       final userModel = await _authRemoteDatasource.register(email, password);
       return Right(userModel);
     } on FirebaseAuthException catch (error) {
+      if (error.code == 'email-already-in-use') {
+        return const Left(AuthFailure("This email is already in use"));
+      } else if (error.code == 'weak-password') {
+        return const Left(AuthFailure("This password is too weak"));
+      } else if (error.code == 'invalid-email') {
+        return const Left(AuthFailure("Invalid email"));
+      }
       return Left(AuthFailure(error.message ?? "Registration failed"));
+    } on SocketException {
+      return Left(AuthFailure.network());
+    } catch (error) {
+      return Left(AuthFailure.unknown());
     }
   }
 
@@ -64,9 +79,15 @@ class AuthRepositoryImpl implements AuthRepository {
       final userModel = await _authRemoteDatasource.getCurrentUser();
       return Right(userModel);
     } on FirebaseAuthException catch (error) {
-      return Left(AuthFailure(error.message ?? "Failed to get current user"));
+      if (error.code == 'user-not-found') {
+        return const Left(AuthFailure("This user is not found"));
+      }
+      return Left(AuthFailure(
+          error.message ?? "An error occurred while fetching the user"));
+    } on SocketException {
+      return Left(AuthFailure.network());
     } catch (error) {
-      return const Left(AuthFailure("Failed to get current user"));
+      return Left(AuthFailure.unknown());
     }
   }
 }
