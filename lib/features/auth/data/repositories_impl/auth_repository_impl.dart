@@ -19,7 +19,7 @@ class AuthRepositoryImpl implements AuthRepository {
   ) async {
     try {
       final userModel = await _authRemoteDatasource.login(email, password);
-      return Right(userModel);
+      return Right(userModel.toEntity());
     } on FirebaseAuthException catch (error) {
       if (error.code == 'user-not-found' || error.code == 'wrong-password') {
         return Left(AuthFailure.invalidCredentials());
@@ -56,7 +56,7 @@ class AuthRepositoryImpl implements AuthRepository {
   ) async {
     try {
       final userModel = await _authRemoteDatasource.register(email, password);
-      return Right(userModel);
+      return Right(userModel.toEntity());
     } on FirebaseAuthException catch (error) {
       if (error.code == 'email-already-in-use') {
         return const Left(AuthFailure("This email is already in use"));
@@ -77,7 +77,7 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<AuthFailure, User?>> getCurrentUser() async {
     try {
       final userModel = await _authRemoteDatasource.getCurrentUser();
-      return Right(userModel);
+      return Right(userModel?.toEntity());
     } on FirebaseAuthException catch (error) {
       if (error.code == 'user-not-found') {
         return const Left(AuthFailure("This user is not found"));
