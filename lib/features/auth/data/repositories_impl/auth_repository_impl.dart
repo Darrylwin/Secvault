@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
 import 'package:secvault/features/auth/domain/errors/auth_failure.dart';
@@ -19,8 +21,18 @@ class AuthRepositoryImpl implements AuthRepository {
       final userModel = await _authRemoteDatasource.login(email, password);
       return Right(userModel);
     } on FirebaseAuthException catch (error) {
-      return Left(AuthFailure(error.message ?? "Login failed"));
+      if (error.code == 'user-not-found' || error.code == 'wrong-password') {
+        return Left(AuthFailure.invalidCredentials());
+      } else if (error.code == 'invalid-email') {
+        return const Left(AuthFailure("Invalid email"));
+      }
+    } on SocketException {
+      return Left(AuthFailure.network());
+    } catch (error) {
+      return Left(AuthFailure("An unknown error occurred : $error"));
     }
+
+    return const Left(AuthFailure("An unexpected error occurred"));
   }
 
   @override
