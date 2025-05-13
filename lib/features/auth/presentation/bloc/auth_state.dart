@@ -8,7 +8,7 @@ final class AuthFailure extends AuthState {
   final String failureMessage;
 }
 
-final class AUthLoading extends AuthState {}
+final class AuthLoading extends AuthState {}
 
 final class AuthSuccess extends AuthState {
   final String uid;
