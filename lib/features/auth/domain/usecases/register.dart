@@ -1,6 +1,6 @@
 import 'package:dartz/dartz.dart';
+import 'package:secvault/features/auth/domain/errors/auth_failure.dart';
 
-import '../../presentation/bloc/auth_state.dart';
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 

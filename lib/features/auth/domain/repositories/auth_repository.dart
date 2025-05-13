@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:secvault/features/auth/domain/entities/user.dart';
-import 'package:secvault/features/auth/presentation/bloc/auth_state.dart';
+
+import '../errors/auth_failure.dart';
 
 abstract class AuthRepository {
+
   Future<Either<AuthFailure, User>> login(String email, String password);
 
   Future<Either<AuthFailure, User>> register(String email, String password);

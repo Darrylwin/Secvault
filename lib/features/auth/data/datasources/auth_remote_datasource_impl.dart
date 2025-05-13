@@ -64,7 +64,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
   @override
   Future<UserModel?> getCurrentUser() async {
     try {
-      final User? user = await _firebaseAuth.currentUser;
+      final User? user = _firebaseAuth.currentUser;
 
       if (user != null) {
         return UserModel(

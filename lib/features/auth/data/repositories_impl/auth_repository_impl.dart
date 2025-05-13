@@ -1,9 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:secvault/features/auth/domain/repositories/auth_repository.dart';
-
+import 'package:firebase_auth/firebase_auth.dart' show FirebaseAuthException;
+import 'package:secvault/features/auth/domain/errors/auth_failure.dart';
 import '../../domain/entities/user.dart';
-import '../../presentation/bloc/auth_state.dart';
+import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -19,7 +18,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final userModel = await _authRemoteDatasource.login(email, password);
       return Right(userModel);
-    } on FirebaseException catch (error) {
+    } on FirebaseAuthException catch (error) {
       return Left(AuthFailure(error.message ?? "Login failed"));
     }
   }
@@ -30,7 +29,7 @@ class AuthRepositoryImpl implements AuthRepository {
       await _authRemoteDatasource.logout();
       return const Right(null);
     } catch (error) {
-      return Left(AuthFailure("Logout failed"));
+      return const Left(AuthFailure("Logout failed"));
     }
   }
 
@@ -42,7 +41,7 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final userModel = await _authRemoteDatasource.register(email, password);
       return Right(userModel);
-    } on FirebaseException catch (error) {
+    } on FirebaseAuthException catch (error) {
       return Left(AuthFailure(error.message ?? "Registration failed"));
     }
   }
@@ -52,10 +51,10 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       final userModel = await _authRemoteDatasource.getCurrentUser();
       return Right(userModel);
-    } on FirebaseException catch (error) {
+    } on FirebaseAuthException catch (error) {
       return Left(AuthFailure(error.message ?? "Failed to get current user"));
     } catch (error) {
-      return Left(AuthFailure("Failed to get current user"));
+      return const Left(AuthFailure("Failed to get current user"));
     }
   }
 }
