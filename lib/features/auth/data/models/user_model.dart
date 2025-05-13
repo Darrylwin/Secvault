@@ -23,4 +23,10 @@ class UserModel extends User {
         'email': email,
         'name': name,
       };
+
+  User toEntity() => User(
+        email: email,
+        name: name,
+        uid: uid,
+      );
 }
