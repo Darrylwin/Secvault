@@ -1,9 +1,9 @@
 import 'package:secvault/features/auth/domain/entities/user.dart';
 
 class UserModel extends User {
-  late final int uid;
-  String email;
-  String name;
+  late final String uid;
+  String? email;
+  String? name;
 
   UserModel({required this.email, required this.name, required this.uid})
       : super(
@@ -14,7 +14,7 @@ class UserModel extends User {
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
         email: json['email'],
-        name: json['email'],
+        name: json['name'],
         uid: json['uid'],
       );
 

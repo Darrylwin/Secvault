@@ -1,7 +1,7 @@
 class User {
-  late final int uid;
-  String email;
-  String name;
+  late final String uid;
+  String? email;
+  String? name;
 
   User({
     required this.uid,
