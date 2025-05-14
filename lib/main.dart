@@ -9,6 +9,7 @@ import 'package:secvault/features/auth/domain/usecases/register.dart';
 import 'package:secvault/features/auth/presentation/bloc/auth_bloc.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/domain/usecases/login.dart';
+import 'features/auth/presentation/screens/login_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -47,7 +48,7 @@ class Secvault extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const Scaffold(),
+      home: LoginPage(),
     );
   }
 }
