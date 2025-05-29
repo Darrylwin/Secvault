@@ -21,6 +21,10 @@ class MyTextField extends StatelessWidget {
       obscureText: obscureText,
       decoration: InputDecoration(
         hintText: hintText,
+        hintStyle: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+        ),
         prefixIcon: Icon(icon),
         filled: true,
         fillColor: const Color(0xffefefef),
