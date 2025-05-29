@@ -34,10 +34,30 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Center(
-                child: SvgPicture.asset(
-                  "assets/images/undraw_adventure_map.svg",
-                  width: 150,
-                  height: 150,
+                child: Column(
+                  children: [
+                    SvgPicture.asset(
+                      "assets/images/undraw_adventure_map.svg",
+                      width: 100,
+                      height: 100,
+                    ),
+                    const Text(
+                      "Welcome back",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Text(
+                      "Sign in to access your account",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w300,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               // const SizedBox(height: 20),
@@ -95,7 +115,8 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed('/register'); // Navigate to register page
+                      Navigator.of(context)
+                          .pushNamed('/home'); // Navigate to home page
                     },
                     child: Container(
                       height: 50,
@@ -125,29 +146,32 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const SizedBox(height: 15),
-                  Center(
-                    child: RichText(
-                      text: const TextSpan(
-                        children: [
-                          TextSpan(
-                            text: "New member? ",
-                            style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                          TextSpan(
-                            text: "Register now",
-                            style: TextStyle(
-                              color: Color(0xFFFD3951),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "New member? ",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
-                    ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).pushNamed(
+                              '/register'); // Navigate to register page
+                        },
+                        child: const Text(
+                          "Register now",
+                          style: TextStyle(
+                            color: Color(0xFFFD3951),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
