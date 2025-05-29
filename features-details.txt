@@ -1,3 +1,5 @@
+======= auth ==========
+
 features/auth/
 ├── data/
 │   ├── models/user_model.dart
@@ -20,3 +22,34 @@ features/auth/
     │   └── register_page.dart
     └── widgets/
         └── login_form.dart
+
+========= vaults ===========
+
+features/
+└── vaults/
+    ├── data/
+    │   ├── datasources/
+    │   │   └── vault_remote_data_source.dart
+    │   ├── models/
+    │   │   └── vault_model.dart
+    │   └── repositories/
+    │       └── vault_repository_impl.dart
+    ├── domain/
+    │   ├── entities/
+    │   │   └── vault.dart
+    │   ├── repositories/
+    │   │   └── vault_repository.dart
+    │   └── usecases/
+    │       ├── create_vault.dart
+    │       ├── get_vaults.dart
+    │       └── delete_vault.dart
+    └── presentation/
+        ├── bloc/
+        │   ├── vault_bloc.dart
+        │   ├── vault_event.dart
+        │   └── vault_state.dart
+        ├── pages/
+        │   ├── vault_list_page.dart
+        │   └── vault_detail_page.dart
+        └── widgets/
+            └── vault_card.dart
