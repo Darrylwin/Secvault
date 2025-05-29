@@ -12,6 +12,9 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
+  final TextEditingController nameController = TextEditingController();
 
   bool agreed = false;
 
@@ -41,14 +44,13 @@ class _RegisterPageState extends State<RegisterPage> {
                       height: 100,
                     ),
                     const Text(
-                      "Welcome to Secvault",
+                      "Get started",
                       style: TextStyle(
                         color: Colors.black,
-                        fontSize: 26,
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    // const SizedBox(height: 5),
                     const Text(
                       "Let's create a free account",
                       style: TextStyle(
@@ -60,102 +62,118 @@ class _RegisterPageState extends State<RegisterPage> {
                   ],
                 ),
               ),
-              // const SizedBox(height: 20),
               Column(
                 children: [
                   MyTextField(
                     obscureText: false,
-                    hintText: "Enter your email",
+                    hintText: "Full name",
+                    controller: nameController,
+                    icon: Icons.person,
+                  ),
+                  const SizedBox(height: 15),
+                  MyTextField(
+                    obscureText: false,
+                    hintText: "Valid email",
                     controller: emailController,
                     icon: Icons.mail_outline_rounded,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 15),
                   MyTextField(
                     obscureText: true,
-                    hintText: "Password",
+                    hintText: "Strong password",
                     controller: passwordController,
                     icon: Icons.lock_outline,
                   ),
-                  // const SizedBox(height: 20),
+                  const SizedBox(height: 15),
+                  MyTextField(
+                    obscureText: true,
+                    hintText: "Confirm password",
+                    controller: confirmPasswordController,
+                    icon: Icons.lock_outline,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                            value: agreed,
-                            onChanged: agreeTermsAndConditions,
-                            checkColor: const Color(0xFFFD3951),
-                            activeColor: Colors.transparent,
-                          ),
-                          Text(
-                            "Do you agree our Terms and Conditions ?",
-                            overflow: TextOverflow.fade,
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 13,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                        ],
+                      Checkbox(
+                        value: agreed,
+                        onChanged: agreeTermsAndConditions,
+                        checkColor: const Color(0xFFFD3951),
+                        activeColor: Colors.transparent,
+                      ),
+                      Text(
+                        "Do you agree our Terms and Conditions ?",
+                        overflow: TextOverflow.fade,
+                        style: TextStyle(
+                          color: Colors.grey[600],
+                          fontSize: 13,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     ],
                   ),
                 ],
               ),
-              // const Spacer(),
               Column(
                 children: [
-                  Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFD3951),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Next",
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Icon(
-                          Icons.arrow_forward_ios_outlined,
-                          color: Colors.white,
-                          size: 15,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  Center(
-                    child: RichText(
-                      text: const TextSpan(
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context)
+                          .pushNamed('/home'); // Navigate to home page
+                    },
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFD3951),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          TextSpan(
-                            text: "New member? ",
+                          Text(
+                            "Next",
                             style: TextStyle(
-                              color: Colors.black,
-                              fontSize: 13,
-                              fontWeight: FontWeight.w300,
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                          TextSpan(
-                            text: "Register now",
-                            style: TextStyle(
-                              color: Color(0xFFFD3951),
-                              fontSize: 13,
-                              fontWeight: FontWeight.w500,
-                            ),
+                          SizedBox(width: 10),
+                          Icon(
+                            Icons.arrow_forward_ios_outlined,
+                            color: Colors.white,
+                            size: 15,
                           ),
                         ],
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 15),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Already a member? ",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w300,
+                        ),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context)
+                              .pushNamed('/login'); // Navigate to login page
+                        },
+                        child: const Text(
+                          "Log in",
+                          style: TextStyle(
+                            color: Color(0xFFFD3951),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
