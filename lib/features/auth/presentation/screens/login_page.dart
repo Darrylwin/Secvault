@@ -16,9 +16,9 @@ class _LoginPageState extends State<LoginPage> {
 
   bool remember = false;
 
-  void Function(bool?)? rememberMe(bool value) {
+  void rememberMe(bool? value) {
     setState(() {
-      value = !value;
+      remember = value ?? false;
     });
   }
 
@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: const Color(0xFAFAFAFF),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          padding: const EdgeInsets.symmetric(horizontal: 25.0, vertical: 25),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -63,9 +63,10 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         children: [
                           Checkbox(
-                            value: false,
-                            onChanged: rememberMe(remember),
+                            value: remember,
+                            onChanged: rememberMe,
                             checkColor: const Color(0xFFFD3951),
+                            activeColor: Colors.transparent,
                           ),
                           Text(
                             "Remember me",
@@ -124,25 +125,25 @@ class _LoginPageState extends State<LoginPage> {
                       text: const TextSpan(
                         children: [
                           TextSpan(
-                            text: "Don't have an account? ",
+                            text: "New member? ",
                             style: TextStyle(
                               color: Colors.black,
-                              fontSize: 16,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w300,
                             ),
                           ),
                           TextSpan(
                             text: "Register now",
                             style: TextStyle(
                               color: Color(0xFFFD3951),
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(height: 25),
                 ],
               ),
             ],

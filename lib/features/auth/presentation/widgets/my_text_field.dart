@@ -25,7 +25,11 @@ class MyTextField extends StatelessWidget {
           fontSize: 12,
           fontWeight: FontWeight.w400,
         ),
-        prefixIcon: Icon(icon),
+        suffixIcon: Icon(
+          icon,
+          color: Colors.grey.shade400,
+          size: 24.0,
+        ),
         filled: true,
         fillColor: const Color(0xffefefef),
         border: OutlineInputBorder(
