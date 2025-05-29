@@ -13,6 +13,10 @@ import 'features/auth/presentation/screens/login_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize Firebase
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
   final authRemoteDatasource = AuthRemoteDatasourceImpl(FirebaseAuth.instance);
   final authRepository = AuthRepositoryImpl(authRemoteDatasource);
 
@@ -21,9 +25,6 @@ void main() async {
   final register = Register(authRepository);
   final getCurrentUser = GetCurrentUser(authRepository);
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   runApp(
     BlocProvider(
       create: (context) => AuthBloc(
