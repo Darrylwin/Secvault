@@ -13,7 +13,6 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
       final docRef = await firestore.collection('vaults').add({
         'name': name,
         'createdAt': Timestamp.now(),
-        'updatedAt': Timestamp.now(),
       });
 
       final snapshot = await docRef.get();
