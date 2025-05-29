@@ -32,4 +32,36 @@ class VaultRepositoryImpl implements VaultRepository {
       return Left(VaultFailure.unknown(error));
     }
   }
+
+  @override
+  Future<Either<VaultFailure, void>> deleteVault(String vaultId) async {
+    try {
+      await _vaultRemoteDataSource.deleteVault(vaultId);
+      return const Right(null);
+    } on FirebaseException catch (error) {
+      return Left(VaultFailure(error.message ?? "Error when deleting vault"));
+    } on SocketException {
+      return Left(VaultFailure.network());
+    } catch (error) {
+      return Left(VaultFailure.unknown(error));
+    }
+  }
+
+  @override
+  Future<Either<VaultFailure, Vault?>> getVaultById(String vaultId) async {
+    try {
+      final model = await _vaultRemoteDataSource.getVaultById(vaultId);
+      return Right(model?.toEntity());
+    } on FirebaseException catch (error) {
+      if (error.code == 'not-found') {
+        return Left(VaultFailure.vaultNotFound());
+      } else {
+        return Left(VaultFailure.unknown(error.message ?? ''));
+      }
+    } on SocketException {
+      return Left(VaultFailure.network());
+    } catch (error) {
+      return Left(VaultFailure.unknown(error));
+    }
+  }
 }
