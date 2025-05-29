@@ -20,7 +20,48 @@ class _RegisterPageState extends State<RegisterPage> {
       TextEditingController();
   final TextEditingController nameController = TextEditingController();
 
+  final ScrollController _scrollController = ScrollController();
+
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+  final FocusNode _confirmPasswordFocusNode = FocusNode();
+  final FocusNode _nameFocusNode = FocusNode();
+
   bool agreed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _emailFocusNode.addListener(_onFocusChange);
+    _passwordFocusNode.addListener(_onFocusChange);
+    _confirmPasswordFocusNode.addListener(_onFocusChange);
+    _nameFocusNode.addListener(_onFocusChange);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _emailFocusNode.dispose();
+    _nameFocusNode.dispose();
+    _confirmPasswordFocusNode.dispose();
+    _passwordFocusNode.dispose();
+    super.dispose();
+  }
+
+  void _onFocusChange() {
+    Future.delayed(
+      const Duration(milliseconds: 300),
+      () {
+        if (_scrollController.hasClients) {
+          _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+        }
+      },
+    );
+  }
 
   void agreeTermsAndConditions(bool? value) {
     setState(() {
@@ -69,6 +110,7 @@ class _RegisterPageState extends State<RegisterPage> {
             }
           },
           child: SingleChildScrollView(
+            controller: _scrollController,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: MediaQuery.of(context).size.height -
@@ -117,6 +159,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             hintText: "Full name",
                             controller: nameController,
                             icon: Icons.person,
+                            focusNode: _nameFocusNode,
                           ),
                           const SizedBox(height: 15),
                           MyTextField(
@@ -124,6 +167,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             hintText: "Valid email",
                             controller: emailController,
                             icon: Icons.mail_outline_rounded,
+                            focusNode: _emailFocusNode,
                           ),
                           const SizedBox(height: 15),
                           MyTextField(
@@ -131,6 +175,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             hintText: "Strong password",
                             controller: passwordController,
                             icon: Icons.lock_outline,
+                            focusNode: _passwordFocusNode,
                           ),
                           const SizedBox(height: 15),
                           MyTextField(
@@ -138,6 +183,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             hintText: "Confirm password",
                             controller: confirmPasswordController,
                             icon: Icons.lock_outline,
+                            focusNode: _confirmPasswordFocusNode,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,

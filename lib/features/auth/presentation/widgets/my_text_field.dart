@@ -7,12 +7,14 @@ class MyTextField extends StatelessWidget {
     required this.hintText,
     required this.controller,
     required this.icon,
+    required this.focusNode,
   });
 
   final TextEditingController controller;
   bool obscureText;
   final String hintText;
   final IconData icon;
+  FocusNode? focusNode;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +39,7 @@ class MyTextField extends StatelessWidget {
           borderSide: BorderSide.none,
         ),
       ),
+      focusNode: focusNode,
     );
   }
 }
