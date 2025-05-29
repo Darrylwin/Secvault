@@ -16,9 +16,9 @@ class _LoginPageState extends State<LoginPage> {
 
   bool remember = false;
 
-  void Function(bool?)? rememberMe() {
+  void Function(bool?)? rememberMe(bool value) {
     setState(() {
-      remember = !remember;
+      value = !value;
     });
   }
 
@@ -27,21 +27,21 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       backgroundColor: const Color(0xFAFAFAFF),
       body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Center(
-              child: SvgPicture.asset(
-                "assets/images/undraw_adventure_map.svg",
-                width: 150,
-                height: 150,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Center(
+                child: SvgPicture.asset(
+                  "assets/images/undraw_adventure_map.svg",
+                  width: 150,
+                  height: 150,
+                ),
               ),
-            ),
-            // const SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 25.0),
-              child: Column(
+              // const SizedBox(height: 20),
+              Column(
                 children: [
                   MyTextField(
                     obscureText: false,
@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Checkbox(
                             value: false,
-                            onChanged: rememberMe(),
+                            onChanged: rememberMe(remember),
                             checkColor: const Color(0xFFFD3951),
                           ),
                           Text(
@@ -89,13 +89,10 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ],
               ),
-            ),
-            // const Spacer(),
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                  child: Container(
+              // const Spacer(),
+              Column(
+                children: [
+                  Container(
                     height: 50,
                     decoration: BoxDecoration(
                       color: const Color(0xFFFD3951),
@@ -121,35 +118,35 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                   ),
-                ),
-                const SizedBox(height: 15),
-                Center(
-                  child: RichText(
-                    text: const TextSpan(
-                      children: [
-                        TextSpan(
-                          text: "Don't have an account? ",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16,
+                  const SizedBox(height: 15),
+                  Center(
+                    child: RichText(
+                      text: const TextSpan(
+                        children: [
+                          TextSpan(
+                            text: "Don't have an account? ",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                            ),
                           ),
-                        ),
-                        TextSpan(
-                          text: "Register now",
-                          style: TextStyle(
-                            color: Color(0xFFFD3951),
-                            fontSize: 16,
-                            fontWeight: FontWeight.w400,
+                          TextSpan(
+                            text: "Register now",
+                            style: TextStyle(
+                              color: Color(0xFFFD3951),
+                              fontSize: 16,
+                              fontWeight: FontWeight.w400,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 25),
-              ],
-            ),
-          ],
+                  const SizedBox(height: 25),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
