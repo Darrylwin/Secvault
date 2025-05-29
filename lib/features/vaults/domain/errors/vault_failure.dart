@@ -9,7 +9,8 @@ class VaultFailure extends Failure {
       const VaultFailure('Network error while accessing vault');
 
   factory VaultFailure.unknown(error) =>
-      const VaultFailure('Unknown error while accessing vault: $e');
+      VaultFailure('Unknown error while accessing vault: $error');
 
-  static VaultFailure permissionDenied() => const VaultFailure('Permission denied');
+  static VaultFailure permissionDenied() =>
+      const VaultFailure('Permission denied');
 }
