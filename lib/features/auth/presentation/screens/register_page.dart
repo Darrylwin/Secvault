@@ -50,13 +50,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
   void _onFocusChange() {
     Future.delayed(
-      const Duration(milliseconds: 300),
+      const Duration(milliseconds: 100),
       () {
         if (_scrollController.hasClients) {
+          // Ajouter un espace supplémentaire pour s'assurer que le champ est visible
+          final offset = _scrollController.position.maxScrollExtent + 150;
           _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
+            offset,
             duration: const Duration(milliseconds: 300),
-            curve: Curves.easeOut,
+            curve: Curves.linear,
           );
         }
       },
@@ -95,7 +97,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFAFAFAFF),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
