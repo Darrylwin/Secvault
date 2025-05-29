@@ -115,8 +115,8 @@ class _LoginPageState extends State<LoginPage> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      Navigator.of(context)
-                          .pushNamed('/home'); // Navigate to home page
+                      Navigator.of(context).pushReplacementNamed(
+                          '/home'); // Navigate to home page
                     },
                     child: Container(
                       height: 50,
@@ -159,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.of(context).pushNamed(
+                          Navigator.of(context).pushReplacementNamed(
                               '/register'); // Navigate to register page
                         },
                         child: const Text(
