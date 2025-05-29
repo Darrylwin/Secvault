@@ -3,10 +3,10 @@ import 'package:secvault/features/vaults/domain/repositories/vault_repository.da
 import '../entities/vault.dart';
 import '../errors/vault_failure.dart';
 
-class GetAllVaults {
+class GetAllVaultsUsecase {
   final VaultRepository vaultRepository;
 
-  const GetAllVaults(this.vaultRepository);
+  const GetAllVaultsUsecase(this.vaultRepository);
 
   Future<Either<VaultFailure, List<Vault>>> call() async =>
       await vaultRepository.getAllVaults();
