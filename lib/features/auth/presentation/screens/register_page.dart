@@ -100,13 +100,26 @@ class _RegisterPageState extends State<RegisterPage> {
                         checkColor: const Color(0xFFFD3951),
                         activeColor: Colors.transparent,
                       ),
-                      Text(
-                        "Do you agree our Terms and Conditions ?",
-                        overflow: TextOverflow.fade,
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 13,
-                          fontWeight: FontWeight.w300,
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Do you agree with our ",
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 13,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                            const TextSpan(
+                              text: "Terms and Conditions ?",
+                              style: TextStyle(
+                                color: Color(0xFFFD3951),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w300,
+                              ),
+                            )
+                          ],
                         ),
                       ),
                     ],
