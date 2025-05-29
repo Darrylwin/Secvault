@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:secvault/features/vaults/domain/entities/vault.dart';
 
 class VaultModel extends Vault {
@@ -28,6 +29,15 @@ class VaultModel extends Vault {
         'name': name,
         'createdAt': createdAt.toIso8601String(),
       };
+
+  factory VaultModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return VaultModel(
+      id: doc.id,
+      name: data['name'],
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+    );
+  }
 
   Vault toEntity() => Vault(
         id: id,
