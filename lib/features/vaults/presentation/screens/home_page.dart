@@ -1,6 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:secvault/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
 import 'package:secvault/features/vaults/presentation/widgets/vault_card.dart';
@@ -58,12 +58,17 @@ class _HomePageState extends State<HomePage> {
             return ListView.separated(
               itemBuilder: (context, index) {
                 final vault = vaults[index];
-                return VaultCard(name: vault.name, createdAt: vault.createdAt, vaultId: vault.id,);
+                return VaultCard(
+                  name: vault.name,
+                  createdAt: vault.createdAt,
+                  vaultId: vault.id,
+                );
               },
               separatorBuilder: (context, index) => const SizedBox(height: 5),
               itemCount: vaults.length,
             );
           }
+          return Container();
         },
       ),
     );
