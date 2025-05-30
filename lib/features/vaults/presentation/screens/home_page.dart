@@ -30,7 +30,9 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, '/createVault');
+        },
         backgroundColor: const Color(0xFFFD3951),
         child: const Icon(
           Icons.add,
@@ -67,8 +69,15 @@ class _HomePageState extends State<HomePage> {
               separatorBuilder: (context, index) => const SizedBox(height: 5),
               itemCount: vaults.length,
             );
+          } else if (state is VaultError) {
+            return Center(
+              child: Text(
+                state.failureMessage,
+                style: const TextStyle(color: Colors.red, fontSize: 16),
+              ),
+            );
           }
-          return Container();
+          return const SizedBox.shrink(); // Fallback for any other state
         },
       ),
     );
