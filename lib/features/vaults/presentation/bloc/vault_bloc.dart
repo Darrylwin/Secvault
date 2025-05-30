@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/features/vaults/domain/usecases/create_vault_usecase.dart';
 import 'package:secvault/features/vaults/domain/usecases/delete_vault_usecase.dart';
@@ -25,8 +26,14 @@ class VaultBloc extends Bloc<VaultEvent, VaultState> {
     emit(VaultLoading());
     final result = await getAllVaults();
     result.fold(
-      (failure) => emit(VaultError(failure.message)),
-      (vaults) => emit(VaultLoaded(vaults)),
+      (failure) {
+        debugPrint('VaultBloc: Failed to load vaults');
+        emit(VaultError(failure.message));
+      },
+      (vaults) {
+        debugPrint('VaultBloc: Loaded vaults: $vaults');
+        emit(VaultLoaded(vaults));
+      },
     );
   }
 

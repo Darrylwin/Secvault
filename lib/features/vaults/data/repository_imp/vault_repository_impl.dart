@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:secvault/features/vaults/data/datasources/vault_remote_datasource.dart';
 import 'package:secvault/features/vaults/domain/entities/vault.dart';
 import 'package:secvault/features/vaults/domain/errors/vault_failure.dart';
@@ -69,16 +70,25 @@ class VaultRepositoryImpl implements VaultRepository {
   Future<Either<VaultFailure, List<Vault>>> getAllVaults() async {
     try {
       final vaults = await _vaultRemoteDataSource.getAllVaults();
+      debugPrint("VaultRepository had fetched datas: $vaults"); //for debugging
       return Right(vaults.map((vault) => vault.toEntity()).toList());
     } on FirebaseException catch (error) {
       if (error.code == 'permission-denied') {
+        debugPrint(
+            "VaultRepository Error fetching datas: ${error.message}"); //for debugging
         return Left(VaultFailure.permissionDenied());
       } else {
+        debugPrint(
+            "VaultRepository Error fetching datas: ${error.message}"); //for debugging
         return Left(VaultFailure.unknown(error.message ?? ''));
       }
     } on SocketException {
+      debugPrint(
+          "VaultRepository Error fetching datas: SocketException"); //for debugging
       return Left(VaultFailure.network());
     } catch (error) {
+      debugPrint(
+          "VaultRepository Error fetching datas: $error"); //for debugging
       return Left(VaultFailure.unknown(error));
     }
   }
