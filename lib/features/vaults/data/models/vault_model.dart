@@ -16,18 +16,18 @@ class VaultModel extends Vault {
           id: id,
         );
 
-  factory VaultModel.fromJson(Map<String, dynamic> json) => VaultModel(
-        createdAt: json['createdAt'] != null
-            ? DateTime.parse(json['createdAt'])
-            : DateTime.now(),
-        name: json['name'],
-        id: json['id'],
-      );
+  // factory VaultModel.fromJson(Map<String, dynamic> json) => VaultModel(
+  //       createdAt: json['createdAt'] != null
+  //           ? DateTime.parse(json['createdAt'])
+  //           : DateTime.now(),
+  //       name: json['name'],
+  //       id: json['id'],
+  //     );
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        'createdAt': createdAt.toIso8601String(),
+        'createdAt': Timestamp.fromDate(createdAt),
       };
 
   factory VaultModel.fromFirestore(DocumentSnapshot doc) {
