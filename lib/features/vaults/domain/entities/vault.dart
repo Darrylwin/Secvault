@@ -8,4 +8,7 @@ class Vault {
     required this.name,
     required this.createdAt,
   });
+
+  @override
+  String toString() => 'Vault{id: $id, name: $name, createdAt: $createdAt}';
 }
