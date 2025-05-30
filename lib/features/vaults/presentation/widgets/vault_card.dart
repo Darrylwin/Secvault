@@ -10,7 +10,7 @@ class VaultCard extends StatelessWidget {
   });
 
   final String name;
-  final Timestamp createdAt;
+  final DateTime createdAt;
   final String vaultId;
 
   @override
