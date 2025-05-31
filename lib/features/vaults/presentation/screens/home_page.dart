@@ -56,6 +56,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             }
+            if (vaults == null) {
+              //TODO: implémenter la logique dans le cas ou la liste qui retourne les vaults est Null
+            }
             return ListView.separated(
               itemBuilder: (context, index) {
                 final vault = vaults[index];
