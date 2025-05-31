@@ -1,23 +1,31 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:secvault/core/themes/light_theme.dart';
 import 'package:secvault/features/auth/data/repositories_impl/auth_repository_impl.dart';
 import 'package:secvault/features/auth/domain/usecases/get_current_user.dart';
 import 'package:secvault/features/auth/domain/usecases/logout.dart';
 import 'package:secvault/features/auth/domain/usecases/register.dart';
 import 'package:secvault/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:secvault/features/vaults/data/datasources/vault_remote_datasource_impl.dart';
+import 'package:secvault/features/vaults/domain/usecases/create_vault_usecase.dart';
+import 'package:secvault/features/vaults/domain/usecases/delete_vault_usecase.dart';
+import 'package:secvault/features/vaults/domain/usecases/get_all_vaults_usecase.dart';
+import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'core/routes.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/domain/usecases/login.dart';
 import 'features/auth/presentation/screens/login_page.dart';
+import 'features/vaults/data/repository_imp/vault_repository_impl.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
+  /* auth feature */
   final authRemoteDatasource = AuthRemoteDatasourceImpl(FirebaseAuth.instance);
   final authRepository = AuthRepositoryImpl(authRemoteDatasource);
 
@@ -26,14 +34,34 @@ void main() async {
   final register = Register(authRepository);
   final getCurrentUser = GetCurrentUser(authRepository);
 
+  /* vault feature */
+  final vaultRemoteDatasource =
+      VaultRemoteDataSourceImpl(firestore: FirebaseFirestore.instance);
+  final vaultRepository = VaultRepositoryImpl(vaultRemoteDatasource);
+
+  final createVault = CreateVaultUsecase(vaultRepository);
+  final deleteVault = DeleteVaultUsecase(vaultRepository);
+  final getAllVaults = GetAllVaultsUsecase(vaultRepository);
+
   runApp(
-    BlocProvider(
-      create: (context) => AuthBloc(
-        loginUsecase: login,
-        logoutUsecase: logout,
-        registerUsecase: register,
-        getCurrentUserUsecase: getCurrentUser,
-      ),
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => AuthBloc(
+            loginUsecase: login,
+            logoutUsecase: logout,
+            registerUsecase: register,
+            getCurrentUserUsecase: getCurrentUser,
+          ),
+        ),
+        BlocProvider(
+          create: (context) => VaultBloc(
+            deleteVault: deleteVault,
+            createVault: createVault,
+            getAllVaults: getAllVaults,
+          ),
+        ),
+      ],
       child: const Secvault(),
     ),
   );
@@ -46,10 +74,7 @@ class Secvault extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Secvault',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: lightTheme,
       routes: routes,
       home: const LoginPage(),
     );
