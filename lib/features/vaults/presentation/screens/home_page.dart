@@ -5,6 +5,7 @@ import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
 import 'package:secvault/features/vaults/presentation/widgets/vault_card.dart';
 
 import '../bloc/vault_state.dart';
+import '../widgets/create_vault_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -14,10 +15,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final TextEditingController vaultNameController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     context.read<VaultBloc>().add(LoadVaults());
+  }
+
+  void Function()? showCreateVaultDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => CreateVaultDialog(
+        vaultNameController: vaultNameController,
+        onCreateVaultPressed: () {
+          final vaultName = vaultNameController.text.trim();
+          if (vaultName.isNotEmpty) {
+            context.read<VaultBloc>().add(CreateVault(vaultName));
+            Navigator.of(context).pop();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Please enter a vault name')),
+            );
+          }
+        },
+      ),
+    );
   }
 
   @override
@@ -29,9 +52,7 @@ class _HomePageState extends State<HomePage> {
       ),
       backgroundColor: Colors.white,
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/createVault');
-        },
+        onPressed: showCreateVaultDialog,
         backgroundColor: const Color(0xFFFD3951),
         child: const Icon(
           Icons.add,
