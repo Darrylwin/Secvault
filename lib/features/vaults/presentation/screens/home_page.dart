@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
+import 'package:secvault/features/vaults/presentation/screens/vault_details.dart';
 import 'package:secvault/features/vaults/presentation/widgets/vault_card.dart';
 
 import '../bloc/vault_state.dart';
@@ -16,6 +17,22 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final TextEditingController vaultNameController = TextEditingController();
+
+  void onVaultTaped({
+    required String vaultId,
+    required String vaultName,
+    required DateTime createdAt,
+  }) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VaultDetails(
+            vaultId: vaultId,
+            vaultName: vaultName,
+            createdAt: createdAt,
+          ),
+        ));
+  }
 
   @override
   void initState() {
@@ -87,6 +104,11 @@ class _HomePageState extends State<HomePage> {
                   name: vault.name,
                   createdAt: vault.createdAt,
                   vaultId: vault.id,
+                  onTap: () => onVaultTaped(
+                    vaultId: vault.id,
+                    vaultName: vault.name,
+                    createdAt: vault.createdAt,
+                  ),
                 );
               },
               separatorBuilder: (context, index) => const SizedBox(height: 5),
