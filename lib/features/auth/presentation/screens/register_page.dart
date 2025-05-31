@@ -103,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
           listener: (context, state) {
             if (state is AuthSuccess) {
               Navigator.of(context).pushReplacementNamed('/home');
-            } else if (state is AuthFailure) {
+            } else if (state is AuthError) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   content: Text(state.failureMessage),

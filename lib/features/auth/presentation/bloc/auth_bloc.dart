@@ -34,7 +34,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await loginUsecase(email: event.email, password: event.password);
 
       result.fold(
-        (failure) => emit(AuthFailure(failure.message)),
+        (failure) => emit(AuthError(failure.message)),
         (success) => emit(
           AuthSuccess(
             User(
@@ -46,7 +46,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      emit(AuthFailure('$e'));
+      emit(AuthError('$e'));
     }
   }
 
@@ -58,11 +58,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final result = await logoutUsecase();
 
       result.fold(
-        (failure) => emit(AuthFailure(failure.message)),
+        (failure) => emit(AuthError(failure.message)),
         (success) => emit(Unauthenticated()),
       );
     } catch (e) {
-      emit(AuthFailure('$e'));
+      emit(AuthError('$e'));
     }
   }
 
@@ -77,7 +77,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       result.fold(
-        (failure) => emit(AuthFailure(failure.message)),
+        (failure) => emit(AuthError(failure.message)),
         (success) => emit(
           AuthSuccess(
             User(
@@ -89,7 +89,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      emit(AuthFailure('$e'));
+      emit(AuthError('$e'));
     }
   }
 
@@ -113,7 +113,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         ),
       );
     } catch (e) {
-      emit(AuthFailure('$e'));
+      emit(AuthError('$e'));
     }
   }
 }

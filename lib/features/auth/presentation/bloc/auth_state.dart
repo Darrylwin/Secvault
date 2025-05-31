@@ -12,8 +12,8 @@ final class AuthSuccess extends AuthState {
   AuthSuccess(this.user);
 }
 
-final class AuthFailure extends AuthState {
-  AuthFailure(this.failureMessage);
+final class AuthError extends AuthState {
+  AuthError(this.failureMessage);
 
   final String failureMessage;
 }
