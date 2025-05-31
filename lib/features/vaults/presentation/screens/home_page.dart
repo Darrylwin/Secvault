@@ -56,6 +56,7 @@ class _HomePageState extends State<HomePage> {
               const SnackBar(content: Text('Please enter a vault name')),
             );
           }
+          vaultNameController.clear();
         },
       ),
     );
