@@ -8,34 +8,35 @@ class CreateVaultDialog extends StatelessWidget {
   });
 
   final TextEditingController vaultNameController;
-
   final VoidCallback onCreateVaultPressed;
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Text(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
               'Create a new vault',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-          ),
-          const SizedBox(height: 20),
-          const TextField(
-            decoration: InputDecoration(
-              labelText: 'Vault Name',
-              border: OutlineInputBorder(),
+            const SizedBox(height: 20),
+            TextField(
+              controller: vaultNameController,
+              decoration: const InputDecoration(
+                labelText: 'Vault Name',
+                border: OutlineInputBorder(),
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: onCreateVaultPressed,
-            child: const Text('Create Vault'),
-          ),
-        ],
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: onCreateVaultPressed,
+              child: const Text('Create Vault'),
+            ),
+          ],
+        ),
       ),
     );
   }
