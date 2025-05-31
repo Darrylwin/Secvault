@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 // Import des packages de test Flutter
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -59,26 +61,27 @@ void main() {
     blocTest<VaultBloc, VaultState>(
       'emits [VaultLoading, VaultLoaded] when LoadVaults is added and getAllVaults succeeds',
       build: () {
-        when(mockVaultRemoteDataSource.getAllVaults())
-            .thenAnswer((_) async {
-              // LOG: Afficher les données brutes retournées par le mock de Firestore
-              print('MOCK FIRESTORE RETURNING DATA: ');
-              for (var model in vaultModels) {
-                print('  Vault ID: ${model.id}, Name: ${model.name}, CreatedAt: ${model.createdAt}');
-              }
-              return vaultModels;
-            });
+        when(mockVaultRemoteDataSource.getAllVaults()).thenAnswer((_) async {
+          // LOG: Afficher les données brutes retournées par le mock de Firestore
+          debugPrint('MOCK FIRESTORE RETURNING DATA: ');
+          for (var model in vaultModels) {
+            debugPrint(
+                '  Vault ID: ${model.id}, Name: ${model.name}, CreatedAt: ${model.createdAt}');
+          }
+          return vaultModels;
+        });
         return vaultBloc;
       },
       act: (bloc) => bloc.add(LoadVaults()),
       expect: () => [
         isA<VaultLoading>(),
         isA<VaultLoaded>().having((state) {
-          final loadedVaults = (state as VaultLoaded).vaults;
+          final loadedVaults = (state).vaults;
           // LOG: Afficher les entités dans l'état chargé du bloc
-          print('BLOC LOADED STATE CONTAINS: ');
+          debugPrint('BLOC LOADED STATE CONTAINS: ');
           for (var vault in loadedVaults) {
-            print('  Vault ID: ${vault.id}, Name: ${vault.name}, CreatedAt: ${vault.createdAt}');
+            debugPrint(
+                '  Vault ID: ${vault.id}, Name: ${vault.name}, CreatedAt: ${vault.createdAt}');
           }
           return loadedVaults.length;
         }, 'number of vaults', vaults.length),
@@ -92,15 +95,15 @@ void main() {
     test('VaultRepository transforms remote data correctly into entities',
         () async {
       // Arrange
-      when(mockVaultRemoteDataSource.getAllVaults())
-          .thenAnswer((_) async {
-            // LOG: Afficher les données brutes retournées par le mock de Firestore
-            print('\nTEST - Mock Firestore returning data: ');
-            for (var model in vaultModels) {
-              print('  Vault ID: ${model.id}, Name: ${model.name}, CreatedAt: ${model.createdAt}');
-            }
-            return vaultModels;
-          });
+      when(mockVaultRemoteDataSource.getAllVaults()).thenAnswer((_) async {
+        // LOG: Afficher les données brutes retournées par le mock de Firestore
+        debugPrint('\nTEST - Mock Firestore returning data: ');
+        for (var model in vaultModels) {
+          debugPrint(
+              '  Vault ID: ${model.id}, Name: ${model.name}, CreatedAt: ${model.createdAt}');
+        }
+        return vaultModels;
+      });
 
       // Act
       final result = await vaultRepository.getAllVaults();
@@ -111,16 +114,20 @@ void main() {
         (failure) => fail('Expected Right but got Left with failure: $failure'),
         (fetchedVaults) {
           // LOG: Afficher les entités récupérées
-          print('TEST - Repository fetched and transformed data: ');
+          debugPrint('TEST - Repository fetched and transformed data: ');
           for (var vault in fetchedVaults) {
-            print('  Vault ID: ${vault.id}, Name: ${vault.name}, CreatedAt: ${vault.createdAt}');
+            debugPrint(
+                '  Vault ID: ${vault.id}, Name: ${vault.name}, CreatedAt: ${vault.createdAt}');
           }
 
           expect(fetchedVaults.length, vaults.length);
           for (int i = 0; i < fetchedVaults.length; i++) {
-            expect(fetchedVaults[i].id, vaultModels[i].id, reason: 'ID does not match');
-            expect(fetchedVaults[i].name, vaultModels[i].name, reason: 'Name does not match');
-            expect(fetchedVaults[i].createdAt, vaultModels[i].createdAt, reason: 'CreatedAt does not match');
+            expect(fetchedVaults[i].id, vaultModels[i].id,
+                reason: 'ID does not match');
+            expect(fetchedVaults[i].name, vaultModels[i].name,
+                reason: 'Name does not match');
+            expect(fetchedVaults[i].createdAt, vaultModels[i].createdAt,
+                reason: 'CreatedAt does not match');
           }
         },
       );
