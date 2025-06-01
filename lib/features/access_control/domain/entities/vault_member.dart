@@ -1,8 +1,10 @@
+import 'package:secvault/features/access_control/domain/entities/user_role.dart';
+
 class VaultMember {
   final String userId;
   final String userName;
   final String email;
-  final String role;
+  final UserRole role;
 
   VaultMember({
     required this.userId,
