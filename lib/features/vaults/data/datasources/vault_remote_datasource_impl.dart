@@ -42,19 +42,4 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
       throw Exception('Failed to fetch vaults: $e');
     }
   }
-
-  @override
-  Future<VaultModel?> getVaultById(String vaultId) async {
-    try {
-      final snapshot = await firestore.collection('vaults').doc(vaultId).get();
-
-      if (snapshot.exists) {
-        return VaultModel.fromFirestore(snapshot);
-      } else {
-        return null;
-      }
-    } catch (e) {
-      throw Exception('Failed to get vault by ID: $e');
-    }
-  }
 }

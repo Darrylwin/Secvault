@@ -49,24 +49,6 @@ class VaultRepositoryImpl implements VaultRepository {
   }
 
   @override
-  Future<Either<VaultFailure, Vault?>> getVaultById(String vaultId) async {
-    try {
-      final vaultModel = await _vaultRemoteDataSource.getVaultById(vaultId);
-      return Right(vaultModel?.toEntity());
-    } on FirebaseException catch (error) {
-      if (error.code == 'not-found') {
-        return Left(VaultFailure.vaultNotFound());
-      } else {
-        return Left(VaultFailure.unknown(error.message ?? ''));
-      }
-    } on SocketException {
-      return Left(VaultFailure.network());
-    } catch (error) {
-      return Left(VaultFailure.unknown(error));
-    }
-  }
-
-  @override
   Future<Either<VaultFailure, List<Vault>>> getAllVaults() async {
     try {
       final vaults = await _vaultRemoteDataSource.getAllVaults();
