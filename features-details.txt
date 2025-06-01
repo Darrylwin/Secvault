@@ -53,3 +53,36 @@ features/
         │   └── vault_detail_page.dart
         └── widgets/
             └── vault_card.dart
+
+========= access_control ===========
+features/
+└── access_control/
+    ├── data/
+    │   ├── datasources/
+    │   │   └── vault_access_remote_data_source.dart
+    │   ├── models/
+    │   │   └── vault_access_model.dart
+    │   └── repositories/
+    │       └── vault_access_repository_impl.dart
+    ├── domain/
+    │   ├── entities/
+    │   │   ├── vault_access.dart        // contient VaultAccess
+    │   │   ├── vault_member.dart        // contient VaultMember
+    │   │   └── user_role.dart           // enum UserRole (owner, reader)
+    │   ├── repositories/
+    │   │   └── vault_access_repository.dart
+    │   └── usecases/
+    │       ├── invite_user_to_vault.dart
+    │       ├── list_vault_members.dart
+    │       └── revoke_user_access.dart
+    └── presentation/
+        ├── bloc/
+        │   ├── vault_access_bloc.dart
+        │   ├── vault_access_event.dart
+        │   └── vault_access_state.dart
+        ├── pages/
+        │   └── vault_members_page.dart
+        └── widgets/
+            ├── invite_user_form.dart
+            ├── member_list_item.dart
+            └── role_selector_dropdown.dart

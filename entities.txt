@@ -47,6 +47,5 @@ Journal des actions effectuées sur un coffre ou un fichier.
 
 enum VaultRole {
   owner,
-  admin,
   reader,
 }
