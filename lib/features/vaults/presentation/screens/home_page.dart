@@ -181,29 +181,6 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   }
-                  if (vaults == null) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
-                          const SizedBox(height: 16),
-                          const Text(
-                            'Unable to load vaults',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(height: 8),
-                          TextButton(
-                            onPressed: () => context.read<VaultBloc>().add(LoadVaults()),
-                            child: Text(
-                              'Retry',
-                              style: TextStyle(color: primaryColor, fontSize: 16),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
                   return ListView.builder(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 80),
                     itemBuilder: (context, index) {
@@ -226,16 +203,19 @@ class _HomePageState extends State<HomePage> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error_outline, size: 80, color: Colors.red[300]),
+                        Icon(Icons.error_outline,
+                            size: 80, color: Colors.red[300]),
                         const SizedBox(height: 16),
                         Text(
                           state.failureMessage,
-                          style: const TextStyle(color: Colors.red, fontSize: 16),
+                          style:
+                              const TextStyle(color: Colors.red, fontSize: 16),
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () => context.read<VaultBloc>().add(LoadVaults()),
+                          onPressed: () =>
+                              context.read<VaultBloc>().add(LoadVaults()),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: primaryColor,
                             foregroundColor: Colors.white,

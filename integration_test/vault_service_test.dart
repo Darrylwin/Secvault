@@ -81,7 +81,7 @@ void main() {
 
     test('récupère la liste réelle des vaults depuis Firestore', () async {
       // Augmenter le délai d'attente du test
-      final timeout = const Duration(minutes: 2);
+      const timeout = Duration(minutes: 2);
       debugPrint('Début du test avec un délai d\'attente de $timeout');
 
       // Vérifier d'abord la connexion à Firestore
@@ -102,8 +102,8 @@ void main() {
         final result = await usecase().timeout(timeout, onTimeout: () {
           debugPrint(
               'TIMEOUT: La récupération des vaults a dépassé le délai d\'attente');
-          return Left(VaultFailure(
-              'Délai d\'attente dépassé lors de la récupération des vaults') as VaultFailure);
+          return const Left(VaultFailure(
+              'Délai d\'attente dépassé lors de la récupération des vaults'));
         });
 
         debugPrint('VaultRepository had fetched datas: ${result.isRight()

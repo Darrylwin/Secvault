@@ -17,7 +17,6 @@ import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'core/routes.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/domain/usecases/login.dart';
-import 'features/auth/presentation/screens/login_page.dart';
 import 'features/vaults/data/repository_imp/vault_repository_impl.dart';
 import 'features/vaults/presentation/screens/home_page.dart';
 import 'firebase_options.dart';
