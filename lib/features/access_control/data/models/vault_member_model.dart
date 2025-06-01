@@ -1,4 +1,3 @@
-import 'package:secvault/features/access_control/domain/entities/vault_access.dart';
 import 'package:secvault/features/access_control/domain/entities/vault_member.dart';
 
 import '../../domain/entities/user_role.dart';
