@@ -10,6 +10,7 @@
 analyzer:
   errors:
     must_be_immutable: ignore
+    body_might_complete_normally_nullable: ignore
 include: package:flutter_lints/flutter.yaml
 
 linter:

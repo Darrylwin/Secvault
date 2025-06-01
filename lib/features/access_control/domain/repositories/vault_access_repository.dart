@@ -1,8 +1,8 @@
 import 'package:dartz/dartz.dart';
-import 'package:secvault/features/access_controll/domain/errors/vault_access_failure.dart';
 
 import '../entities/user_role.dart';
 import '../entities/vault_member.dart';
+import '../errors/vault_access_failure.dart';
 
 abstract class VaultAccessRepository {
   Future<Either<VaultAccessFailure, void>> inviteUserToVault({
