@@ -4,7 +4,6 @@ Représente un conteneur sécurisé dans lequel on peut stocker des fichiers.
 | ----------- | ---------- | ---------------------------- |
 | `id`        | `String`   | Identifiant unique           |
 | `name`      | `String`   | Nom du coffre                |
-| `updatedAt`   | `DateTime`   | Date de modification  |
 | `createdAt` | `DateTime` | Date de création             |
 
 👤 2. User (Utilisateur)
