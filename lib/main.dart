@@ -9,6 +9,9 @@ import 'package:secvault/features/auth/domain/usecases/get_current_user.dart';
 import 'package:secvault/features/auth/domain/usecases/logout.dart';
 import 'package:secvault/features/auth/domain/usecases/register.dart';
 import 'package:secvault/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:secvault/features/auth/presentation/bloc/auth_event.dart';
+import 'package:secvault/features/auth/presentation/bloc/auth_state.dart';
+import 'package:secvault/features/auth/presentation/screens/login_page.dart';
 import 'package:secvault/features/vaults/data/datasources/vault_remote_datasource_impl.dart';
 import 'package:secvault/features/vaults/domain/usecases/create_vault_usecase.dart';
 import 'package:secvault/features/vaults/domain/usecases/delete_vault_usecase.dart';
@@ -72,11 +75,30 @@ class Secvault extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Vérifie l'état d'authentification au démarrage
+    BlocProvider.of<AuthBloc>(context).add(CheckAuthRequested());
+
     return MaterialApp(
       title: 'Secvault',
       theme: lightTheme,
       routes: routes,
-      home: const HomePage(),
+      home: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthLoading) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else if (state is AuthSuccess) {
+            // Si l'utilisateur est déjà connecté, rediriger vers la page d'accueil
+            return const HomePage();
+          } else {
+            // Sinon, rediriger vers la page de connexion
+            return const LoginPage();
+          }
+        },
+      ),
     );
   }
 }
