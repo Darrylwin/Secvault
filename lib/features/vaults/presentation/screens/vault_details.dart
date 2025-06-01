@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:secvault/features/vaults/presentation/widgets/my_action_button.dart';
 
-class VaultDetails extends StatefulWidget {
-  const VaultDetails({
+class VaultDetails extends StatelessWidget {
+  VaultDetails({
     super.key,
     required this.vaultId,
     required this.vaultName,
@@ -12,11 +14,6 @@ class VaultDetails extends StatefulWidget {
   final String vaultName;
   final DateTime createdAt;
 
-  @override
-  State<VaultDetails> createState() => _VaultDetailsState();
-}
-
-class _VaultDetailsState extends State<VaultDetails> {
   final List<Map<String, dynamic>> _files = [
     {
       'id': '1',
@@ -55,14 +52,11 @@ class _VaultDetailsState extends State<VaultDetails> {
     },
   ];
 
-  final Color primaryColor = const Color(0xFFFD3951);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: primaryColor,
         elevation: 0,
         title: const Text(
           "Vault Details",
@@ -88,10 +82,112 @@ class _VaultDetailsState extends State<VaultDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Vault info card
-            _buildInfoCard(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
+              child: Card(
+                elevation: 4,
+                shadowColor: Colors.black26,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                vaultName,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.calendar_today,
+                                    size: 14,
+                                    color: Colors.grey[600],
+                                  ),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    'Created on ${DateFormat('MMM dd, yyyy').format(createdAt)}',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.1),
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.folder,
+                              color: Theme.of(context).colorScheme.primary,
+                              size: 28,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // const SizedBox(height: 15),
+                      // LinearProgressIndicator(
+                      //   value: 0.45,
+                      //   backgroundColor: const Color(0xFFE0E0E0),
+                      //   valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                      // ),
+                      // const SizedBox(height: 10),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Text(
+                      //       'Storage used',
+                      //       style: TextStyle(
+                      //         fontSize: 14,
+                      //         color: Colors.grey[600],
+                      //       ),
+                      //     ),
+                      //     Text(
+                      //       '21.4 MB / 50 MB',
+                      //       style: TextStyle(
+                      //         fontSize: 14,
+                      //         fontWeight: FontWeight.bold,
+                      //         color: primaryColor,
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
 
             // Action buttons
-            _buildActionButtons(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  MyActionButton(icon: Icons.upload_file, label: 'Upload'),
+                  MyActionButton(icon: Icons.share, label: 'Share'),
+                  MyActionButton(icon: Icons.delete_outline, label: 'Delete'),
+                ],
+              ),
+            ),
 
             // Files header
             Padding(
@@ -107,7 +203,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                     ),
                   ),
                   CircleAvatar(
-                    backgroundColor: primaryColor,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     radius: 12,
                     child: Text(
                       '${_files.length}',
@@ -133,145 +229,7 @@ class _VaultDetailsState extends State<VaultDetails> {
         },
         icon: const Icon(Icons.add),
         label: const Text('Add File'),
-        backgroundColor: primaryColor,
       ),
-    );
-  }
-
-  Widget _buildInfoCard() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 15),
-      child: Card(
-        elevation: 4,
-        shadowColor: Colors.black26,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Personal Documents',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.calendar_today,
-                            size: 14,
-                            color: Colors.grey[600],
-                          ),
-                          const SizedBox(width: 5),
-                          Text(
-                            'Created on May 28, 2025',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: primaryColor.withOpacity(0.1),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.folder,
-                      color: primaryColor,
-                      size: 28,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 15),
-              LinearProgressIndicator(
-                value: 0.45,
-                backgroundColor: const Color(0xFFE0E0E0),
-                valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Storage used',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                  Text(
-                    '21.4 MB / 50 MB',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: primaryColor,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionButtons() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _actionButton(Icons.upload_file, 'Upload'),
-          _actionButton(Icons.share, 'Share'),
-          _actionButton(Icons.lock, 'Lock'),
-          _actionButton(Icons.delete_outline, 'Delete'),
-        ],
-      ),
-    );
-  }
-
-  Widget _actionButton(IconData icon, String label) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            color: Colors.grey[100],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: Colors.grey[300]!, width: 1),
-          ),
-          child: Icon(
-            icon,
-            color: primaryColor,
-            size: 24,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            color: Colors.grey[800],
-          ),
-        ),
-      ],
     );
   }
 
@@ -309,7 +267,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                     fileExtension.toUpperCase(),
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                 ),
@@ -337,7 +295,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                   IconButton(
                     icon: Icon(
                       Icons.download_outlined,
-                      color: primaryColor,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                     onPressed: () {
                       // Download file action
