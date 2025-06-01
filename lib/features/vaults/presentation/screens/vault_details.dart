@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
+import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
+import 'package:secvault/features/vaults/presentation/widgets/confirm_vault_delete_dialog.dart';
 import 'package:secvault/features/vaults/presentation/widgets/my_action_button.dart';
 
 class VaultDetails extends StatelessWidget {
@@ -54,6 +58,19 @@ class VaultDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void Function()? onDeleteVaultTapped() {
+      showDialog(
+        context: context,
+        builder: (context) => ConfirmVaultDeleteDialog(
+          onPressed: () {
+            context.read<VaultBloc>().add(DeleteVault(vaultId));
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          },
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -182,9 +199,21 @@ class VaultDetails extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  MyActionButton(icon: Icons.upload_file, label: 'Upload'),
-                  MyActionButton(icon: Icons.share, label: 'Share'),
-                  MyActionButton(icon: Icons.delete_outline, label: 'Delete'),
+                  MyActionButton(
+                    icon: Icons.upload_file,
+                    label: 'Upload',
+                    onTap: () {},
+                  ),
+                  MyActionButton(
+                    icon: Icons.share,
+                    label: 'Share',
+                    onTap: () {},
+                  ),
+                  MyActionButton(
+                    icon: Icons.delete_outline,
+                    label: 'Delete',
+                    onTap: onDeleteVaultTapped,
+                  ),
                 ],
               ),
             ),
