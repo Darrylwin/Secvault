@@ -1,11 +1,11 @@
-class SecureFile {
+class SecuredFile {
   final String fileId;
   final String vaultId;
   final String fileName;
   final String encryptedData;
   final DateTime uploadedAt;
 
-  SecureFile({
+  SecuredFile({
     required this.fileId,
     required this.vaultId,
     required this.fileName,
