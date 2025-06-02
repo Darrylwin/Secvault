@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:secvault/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:secvault/features/auth/domain/errors/auth_failure.dart';
-import 'package:secvault/features/auth/presentation/bloc/auth_state.dart';
 import 'auth_remote_datasource.dart';
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
