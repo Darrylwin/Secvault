@@ -19,6 +19,18 @@ class VaultMember {
     this.status = 'pending',
   });
 
+  VaultMember toEntity() {
+    return VaultMember(
+      userId: userId,
+      userName: userName,
+      email: email,
+      role: role,
+      invitedAt: invitedAt,
+      invitedBy: invitedBy,
+      status: status,
+    );
+  }
+
   @override
   String toString() =>
       'VaultMember(userId: $userId, userName: $userName, email: $email, role: $role, invitedAt: $invitedAt, invitedBy: $invitedBy, status: $status)';
