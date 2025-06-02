@@ -9,10 +9,10 @@ class DeleteSecuredFileUsecase {
 
   Future<Either<SecuredFileFailure, void>> call({
     required String vaultId,
-    required String fileName,
+    required String fileId,
   }) async =>
       await securedFileRepository.deleteSecuredFile(
         vaultId: vaultId,
-        fileName: fileName,
+        fileId: fileId,
       );
 }

@@ -12,7 +12,7 @@ abstract class SecuredFileRepository {
 
   Future<Either<SecuredFileFailure, void>> deleteSecuredFile({
     required String vaultId,
-    required String fileName,
+    required String fileId,
   });
 
   Future<Either<SecuredFileFailure, List<SecuredFile>>> listSecuredFiles({
