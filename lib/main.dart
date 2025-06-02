@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/core/themes/light_theme.dart';
-import 'package:secvault/features/access_control/data/datasources/vault_access_remote_datasource.dart';
 import 'package:secvault/features/access_control/data/datasources/vault_access_remote_datasource_impl.dart';
 import 'package:secvault/features/access_control/domain/usecases/invite_user_to_vault_useacse.dart';
 import 'package:secvault/features/access_control/domain/usecases/list_vault_members_usecase.dart';
@@ -37,6 +36,7 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final FirebaseAuth firebaseAuthInstance = FirebaseAuth.instance;
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+
   /* auth feature */
   final authRemoteDatasource = AuthRemoteDatasourceImpl(firebaseAuthInstance);
   final authRepository = AuthRepositoryImpl(authRemoteDatasource);
@@ -56,8 +56,7 @@ void main() async {
   final getAllVaults = GetAllVaultsUsecase(vaultRepository);
 
   /*access controll feature*/
-  final VaultAccessRemoteDatasource vaultAccessRemoteDatasource =
-      VaultAccessRemoteDatasourceImpl(
+  final vaultAccessRemoteDatasource = VaultAccessRemoteDatasourceImpl(
     firestore: firestoreInstance,
     auth: firebaseAuthInstance,
   );
