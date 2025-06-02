@@ -5,6 +5,8 @@ import 'package:secvault/features/access_control/data/datasources/vault_access_r
 import 'package:secvault/features/access_control/domain/entities/user_role.dart';
 import 'package:secvault/features/access_control/domain/errors/vault_access_failure.dart';
 
+import '../../domain/entities/vault_member.dart';
+
 class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
   final FirebaseFirestore firestore;
   final FirebaseAuth auth;
@@ -95,6 +97,62 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
     } catch (e) {
       // Log l'erreur mais ne pas faire échouer le processus d'invitation
       debugPrint('Erreur lors de l\'envoi de l\'email: ${e.toString()}');
+    }
+  }
+
+  @override
+  Future<List<VaultMember>> listVaultMembers({required String vaultId}) async {
+    try {
+      // Vérifier si le coffre existe
+      final vaultDoc = await firestore.collection('vaults').doc(vaultId).get();
+      if (!vaultDoc.exists) {
+        throw VaultAccessFailure('Le coffre spécifié n\'existe pas');
+      }
+
+      // Récupérer tous les membres du coffre
+      final membersSnapshot = await firestore
+          .collection('vaults')
+          .doc(vaultId)
+          .collection('members')
+          .get();
+
+      // Convertir les documents Firestore en objets VaultMember
+      final List<VaultMember> members = membersSnapshot.docs.map((doc) {
+        final data = doc.data();
+
+        // Conversion du rôle de string à enum UserRole
+        UserRole memberRole;
+        try {
+          final roleString = data['role'] as String;
+          memberRole = UserRole.values.firstWhere(
+            (role) => role.toString().split('.').last == roleString,
+            orElse: () => UserRole.reader, // Par défaut, attribuer reader si le rôle est inconnu
+          );
+        } catch (e) {
+          memberRole = UserRole.reader; // Valeur par défaut en cas d'erreur
+        }
+
+        // Conversion du timestamp en DateTime si non null
+        DateTime? invitedAtDate;
+        if (data['invitedAt'] != null) {
+          final timestamp = data['invitedAt'] as Timestamp;
+          invitedAtDate = timestamp.toDate();
+        }
+
+        return VaultMember(
+          userId: data['userId'] as String? ?? doc.id,
+          userName: data['userName'] as String? ?? 'Utilisateur',
+          email: data['email'] as String,
+          role: memberRole,
+          invitedAt: invitedAtDate,
+          invitedBy: data['invitedBy'] as String?,
+          status: data['status'] as String? ?? 'pending',
+        );
+      }).toList();
+
+      return members;
+    } catch (e) {
+      throw VaultAccessFailure('Erreur lors de la récupération des membres du coffre: ${e.toString()}');
     }
   }
 }
