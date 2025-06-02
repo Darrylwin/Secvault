@@ -40,4 +40,18 @@ class VaultAccessRepositoryImpl implements VaultAccessRepository {
       return Left(VaultAccessFailure('Failed to list vault members: $e'));
     }
   }
+
+  @override
+  Future<Either<VaultAccessFailure, void>> revokeUserAccess({
+    required String vaultId,
+    required String userId,
+  }) async {
+    try {
+      await vaultAccessRemoteDatasource.revokeUserAccess(
+          vaultId: vaultId, userId: userId);
+      return const Right(null);
+    } catch (e) {
+      return Left(VaultAccessFailure('Failed to revoke user access: $e'));
+    }
+  }
 }
