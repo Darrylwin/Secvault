@@ -4,7 +4,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:dartz/dartz.dart';
 import 'package:secvault/features/vaults/data/datasources/vault_remote_datasource_impl.dart';
-import 'package:secvault/features/vaults/data/repository_imp/vault_repository_impl.dart';
+import 'package:secvault/features/vaults/data/repositories_imp/vault_repository_impl.dart';
 import 'package:secvault/features/vaults/domain/entities/vault.dart';
 import 'package:secvault/features/vaults/domain/errors/vault_failure.dart';
 import 'package:secvault/features/vaults/domain/repositories/vault_repository.dart';

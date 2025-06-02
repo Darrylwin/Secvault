@@ -30,6 +30,7 @@ class VaultMemberModel extends VaultMember {
         status: json['status'] as String? ?? 'pending',
       );
 
+  @override
   VaultMember toEntity() => VaultMember(
         userId: userId,
         userName: userName,
