@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:secvault/features/auth/data/models/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:secvault/features/auth/domain/errors/auth_failure.dart';
 import 'auth_remote_datasource.dart';
 
 class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
@@ -26,7 +27,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       );
     } catch (e) {
       debugPrint("Logging error: $e");
-      rethrow;
+      throw AuthFailure("Failed to login : $e");
     }
   }
 
@@ -48,7 +49,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       );
     } catch (e) {
       debugPrint("Registration error: $e");
-      rethrow;
+      throw AuthFailure("Failed to register: $e");
     }
   }
 
@@ -58,7 +59,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       await _firebaseAuth.signOut();
     } catch (error) {
       debugPrint("Logout error: $error");
-      rethrow;
+      throw AuthFailure("Failed to logout: $error");
     }
   }
 
@@ -76,7 +77,7 @@ class AuthRemoteDatasourceImpl implements AuthRemoteDatasource {
       }
     } catch (error) {
       debugPrint("Get current user error: $error");
-      rethrow;
+      throw AuthFailure("Failed to get current user: $error");
     }
   }
 }

@@ -1,7 +1,7 @@
 import '../../../../core/error/failure.dart';
 
 class AuthFailure extends Failure {
-  const AuthFailure(String message) : super(message);
+  const AuthFailure(super.message);
 
   factory AuthFailure.invalidCredentials() =>
       const AuthFailure('Identifiants invalides');

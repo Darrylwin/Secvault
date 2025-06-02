@@ -97,7 +97,6 @@ class MockVaultRepository extends _i1.Mock implements _i3.VaultRepository {
         )),
       ) as _i4.Future<_i2.Either<_i5.VaultFailure, List<_i6.Vault>>>);
 
-  @override
   _i4.Future<_i2.Either<_i5.VaultFailure, _i6.Vault?>> getVaultById(
           String? vaultId) =>
       (super.noSuchMethod(

@@ -4,21 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/core/themes/light_theme.dart';
+import 'package:secvault/features/access_control/data/datasources/vault_access_remote_datasource_impl.dart';
+import 'package:secvault/features/access_control/domain/usecases/invite_user_to_vault_useacse.dart';
+import 'package:secvault/features/access_control/domain/usecases/list_vault_members_usecase.dart';
+import 'package:secvault/features/access_control/domain/usecases/revoke_user_access_usecase.dart';
 import 'package:secvault/features/auth/data/repositories_impl/auth_repository_impl.dart';
 import 'package:secvault/features/auth/domain/usecases/get_current_user.dart';
 import 'package:secvault/features/auth/domain/usecases/logout.dart';
 import 'package:secvault/features/auth/domain/usecases/register.dart';
 import 'package:secvault/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:secvault/features/auth/presentation/bloc/auth_event.dart';
+import 'package:secvault/features/auth/presentation/bloc/auth_state.dart';
+import 'package:secvault/features/auth/presentation/screens/login_page.dart';
 import 'package:secvault/features/vaults/data/datasources/vault_remote_datasource_impl.dart';
 import 'package:secvault/features/vaults/domain/usecases/create_vault_usecase.dart';
 import 'package:secvault/features/vaults/domain/usecases/delete_vault_usecase.dart';
 import 'package:secvault/features/vaults/domain/usecases/get_all_vaults_usecase.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'core/routes.dart';
+import 'features/access_control/data/repositories_impl/vault_access_repository_impl.dart';
+import 'features/access_control/presentation/bloc/vault_access_bloc.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/domain/usecases/login.dart';
-import 'features/auth/presentation/screens/login_page.dart';
-import 'features/vaults/data/repository_imp/vault_repository_impl.dart';
+import 'features/vaults/data/repositories_imp/vault_repository_impl.dart';
 import 'features/vaults/presentation/screens/home_page.dart';
 import 'firebase_options.dart';
 
@@ -26,8 +34,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final FirebaseAuth firebaseAuthInstance = FirebaseAuth.instance;
+  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+
   /* auth feature */
-  final authRemoteDatasource = AuthRemoteDatasourceImpl(FirebaseAuth.instance);
+  final authRemoteDatasource = AuthRemoteDatasourceImpl(firebaseAuthInstance);
   final authRepository = AuthRepositoryImpl(authRemoteDatasource);
 
   final login = Login(authRepository);
@@ -37,12 +48,24 @@ void main() async {
 
   /* vault feature */
   final vaultRemoteDatasource =
-      VaultRemoteDataSourceImpl(firestore: FirebaseFirestore.instance);
+      VaultRemoteDataSourceImpl(firestore: firestoreInstance);
   final vaultRepository = VaultRepositoryImpl(vaultRemoteDatasource);
 
   final createVault = CreateVaultUsecase(vaultRepository);
   final deleteVault = DeleteVaultUsecase(vaultRepository);
   final getAllVaults = GetAllVaultsUsecase(vaultRepository);
+
+  /*access controll feature*/
+  final vaultAccessRemoteDatasource = VaultAccessRemoteDatasourceImpl(
+    firestore: firestoreInstance,
+    auth: firebaseAuthInstance,
+  );
+  final vaultAccessRepository =
+      VaultAccessRepositoryImpl(vaultAccessRemoteDatasource);
+
+  final inviteUserToVault = InviteUserToVaultUseacse(vaultAccessRepository);
+  final listVaultMembers = ListVaultMembersUsecase(vaultAccessRepository);
+  final revokeUserAccess = RevokeUserAccessUsecase(vaultAccessRepository);
 
   runApp(
     MultiBlocProvider(
@@ -62,6 +85,13 @@ void main() async {
             getAllVaults: getAllVaults,
           ),
         ),
+        BlocProvider(
+          create: (context) => VaultAccessBloc(
+            inviteUserToVaultUseacse: inviteUserToVault,
+            listVaultMembersUseacse: listVaultMembers,
+            revokeUserAccessUseacse: revokeUserAccess,
+          ),
+        ),
       ],
       child: const Secvault(),
     ),
@@ -73,11 +103,30 @@ class Secvault extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Vérifie l'état d'authentification au démarrage
+    BlocProvider.of<AuthBloc>(context).add(CheckAuthRequested());
+
     return MaterialApp(
       title: 'Secvault',
       theme: lightTheme,
       routes: routes,
-      home: const HomePage(),
+      home: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthLoading) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          } else if (state is AuthSuccess) {
+            // Si l'utilisateur est déjà connecté, rediriger vers la page d'accueil
+            return const HomePage();
+          } else {
+            // Sinon, rediriger vers la page de connexion
+            return const LoginPage();
+          }
+        },
+      ),
     );
   }
 }

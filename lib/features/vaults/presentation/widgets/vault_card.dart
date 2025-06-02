@@ -41,7 +41,7 @@ class VaultCard extends StatelessWidget {
                       color: primaryColor.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
+                    child: const Icon(
                       Icons.folder,
                       color: primaryColor,
                       size: 28,
@@ -81,7 +81,7 @@ class VaultCard extends StatelessWidget {
                     ),
                   ),
                   IconButton(
-                    icon: Icon(
+                    icon: const Icon(
                       Icons.arrow_forward_ios,
                       size: 18,
                       color: primaryColor,
@@ -94,7 +94,7 @@ class VaultCard extends StatelessWidget {
               LinearProgressIndicator(
                 value: 0.3, // Placeholder, could be dynamic based on vault usage
                 backgroundColor: Colors.grey[200],
-                valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
+                valueColor: const AlwaysStoppedAnimation<Color>(primaryColor),
               ),
               const SizedBox(height: 8),
               Row(
@@ -107,7 +107,7 @@ class VaultCard extends StatelessWidget {
                       color: Colors.grey[600],
                     ),
                   ),
-                  Text(
+                  const Text(
                     '12.4 MB / 50 MB',  // Placeholder, could be dynamic size
                     style: TextStyle(
                       fontSize: 12,
