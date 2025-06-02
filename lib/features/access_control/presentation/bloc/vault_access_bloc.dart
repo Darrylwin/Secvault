@@ -46,4 +46,19 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
       (successs) => emit(VaultMembersLoaded(successs)),
     );
   }
+
+  Future<void> _onRevokeUser(
+      RevokeUserAccessEvent event, Emitter<VaultAccessState> emit) async {
+    emit(VaultAccessLoading());
+
+    final result = await revokeUserAccessUseacse(
+      vaultId: event.vaultId,
+      userId: event.userId,
+    );
+
+    result.fold(
+      (error) => emit(VaultAccessError(error.toString())),
+      (success) => emit(VaultAccessSuccess("User access revoked successfully")),
+    );
+  }
 }
