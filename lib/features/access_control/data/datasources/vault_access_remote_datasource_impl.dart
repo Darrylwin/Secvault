@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:secvault/features/access_control/data/datasources/vault_access_remote_datasource.dart';
 import 'package:secvault/features/access_control/domain/entities/user_role.dart';
+import 'package:secvault/features/access_control/domain/errors/vault_access_failure.dart';
 
 class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
   final FirebaseFirestore firestore;
@@ -24,13 +25,14 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
       final userList = await auth.fetchSignInMethodsForEmail(userEmail);
 
       if (userList.isEmpty) {
-        throw Exception('Aucun utilisateur n\'est inscrit avec cet email');
+        throw VaultAccessFailure(
+            'Aucun utilisateur n\'est inscrit avec cet email');
       }
 
       // Vérifier si le coffre existe
       final vaultDoc = await firestore.collection('vaults').doc(vaultId).get();
       if (!vaultDoc.exists) {
-        throw Exception('Le coffre spécifié n\'existe pas');
+        throw VaultAccessFailure('Le coffre spécifié n\'existe pas');
       }
 
       // Obtenir la collection des membres du coffre
@@ -41,7 +43,7 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
       final membersWithEmail =
           await membersCollection.where('email', isEqualTo: userEmail).get();
       if (membersWithEmail.docs.isNotEmpty) {
-        throw Exception('L\'utilisateur a déjà accès à ce coffre');
+        throw VaultAccessFailure('L\'utilisateur a déjà accès à ce coffre');
       }
 
       // Générer un ID unique pour le membre
@@ -65,7 +67,7 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
       await _sendInvitationEmail(
           userEmail, vaultId, vaultDoc.data()?['name'] ?? 'Vault', role);
     } catch (e) {
-      throw Exception(
+      throw VaultAccessFailure(
           'Erreur lors de l\'invitation de l\'utilisateur: ${e.toString()}');
     }
   }
