@@ -5,16 +5,21 @@ class VaultMember {
   final String userName;
   final String email;
   final UserRole role;
+  final DateTime? invitedAt;
+  final String? invitedBy;
+  final String status; // Par exemple: 'pending', 'accepted', etc.
 
   VaultMember({
     required this.userId,
     required this.userName,
     required this.email,
     required this.role,
+    this.invitedAt,
+    this.invitedBy,
+    this.status = 'pending',
   });
 
   @override
-  String toString() {
-    return 'VaultMember(id: $userId, name: $userName, email: $email, role: $role)';
-  }
+  String toString() =>
+      'VaultMember(userId: $userId, userName: $userName, email: $email, role: $role, invitedAt: $invitedAt, invitedBy: $invitedBy, status: $status)';
 }
