@@ -4,6 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/core/themes/light_theme.dart';
+import 'package:secvault/features/access_control/data/datasources/vault_access_remote_datasource.dart';
+import 'package:secvault/features/access_control/data/datasources/vault_access_remote_datasource_impl.dart';
+import 'package:secvault/features/access_control/domain/usecases/invite_user_to_vault_useacse.dart';
+import 'package:secvault/features/access_control/domain/usecases/list_vault_members_usecase.dart';
+import 'package:secvault/features/access_control/domain/usecases/revoke_user_access_usecase.dart';
 import 'package:secvault/features/auth/data/repositories_impl/auth_repository_impl.dart';
 import 'package:secvault/features/auth/domain/usecases/get_current_user.dart';
 import 'package:secvault/features/auth/domain/usecases/logout.dart';
@@ -18,6 +23,8 @@ import 'package:secvault/features/vaults/domain/usecases/delete_vault_usecase.da
 import 'package:secvault/features/vaults/domain/usecases/get_all_vaults_usecase.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'core/routes.dart';
+import 'features/access_control/data/repositories_impl/vault_access_repository_impl.dart';
+import 'features/access_control/presentation/bloc/vault_access_bloc.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/domain/usecases/login.dart';
 import 'features/vaults/data/repositories_imp/vault_repository_impl.dart';
@@ -28,8 +35,10 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  final FirebaseAuth firebaseAuthInstance = FirebaseAuth.instance;
+  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
   /* auth feature */
-  final authRemoteDatasource = AuthRemoteDatasourceImpl(FirebaseAuth.instance);
+  final authRemoteDatasource = AuthRemoteDatasourceImpl(firebaseAuthInstance);
   final authRepository = AuthRepositoryImpl(authRemoteDatasource);
 
   final login = Login(authRepository);
@@ -39,12 +48,24 @@ void main() async {
 
   /* vault feature */
   final vaultRemoteDatasource =
-      VaultRemoteDataSourceImpl(firestore: FirebaseFirestore.instance);
+      VaultRemoteDataSourceImpl(firestore: firestoreInstance);
   final vaultRepository = VaultRepositoryImpl(vaultRemoteDatasource);
 
   final createVault = CreateVaultUsecase(vaultRepository);
   final deleteVault = DeleteVaultUsecase(vaultRepository);
   final getAllVaults = GetAllVaultsUsecase(vaultRepository);
+
+  /*access controll feature*/
+  final VaultAccessRemoteDatasource = VaultAccessRemoteDatasourceImpl(
+    firestore: firestoreInstance,
+    auth: firebaseAuthInstance,
+  );
+  final vaultAccessRepository =
+      VaultAccessRepositoryImpl(VaultAccessRemoteDatasource);
+
+  final inviteUserToVault = InviteUserToVaultUseacse(vaultAccessRepository);
+  final listVaultMembers = ListVaultMembersUsecase(vaultAccessRepository);
+  final revokeUserAccess = RevokeUserAccessUsecase(vaultAccessRepository);
 
   runApp(
     MultiBlocProvider(
@@ -62,6 +83,13 @@ void main() async {
             deleteVault: deleteVault,
             createVault: createVault,
             getAllVaults: getAllVaults,
+          ),
+        ),
+        BlocProvider(
+          create: (context) => VaultAccessBloc(
+            inviteUserToVaultUseacse: inviteUserToVault,
+            listVaultMembersUseacse: listVaultMembers,
+            revokeUserAccessUseacse: revokeUserAccess,
           ),
         ),
       ],
