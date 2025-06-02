@@ -56,12 +56,13 @@ void main() async {
   final getAllVaults = GetAllVaultsUsecase(vaultRepository);
 
   /*access controll feature*/
-  final VaultAccessRemoteDatasource = VaultAccessRemoteDatasourceImpl(
+  final VaultAccessRemoteDatasource vaultAccessRemoteDatasource =
+      VaultAccessRemoteDatasourceImpl(
     firestore: firestoreInstance,
     auth: firebaseAuthInstance,
   );
   final vaultAccessRepository =
-      VaultAccessRepositoryImpl(VaultAccessRemoteDatasource);
+      VaultAccessRepositoryImpl(vaultAccessRemoteDatasource);
 
   final inviteUserToVault = InviteUserToVaultUseacse(vaultAccessRepository);
   final listVaultMembers = ListVaultMembersUsecase(vaultAccessRepository);
