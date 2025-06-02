@@ -155,4 +155,116 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
       throw VaultAccessFailure('Erreur lors de la récupération des membres du coffre: ${e.toString()}');
     }
   }
+
+
+  @override
+  Future<void> revokeUserAccess({
+    required String vaultId,
+    required String userId,
+  }) async {
+    try {
+      // Vérifier si le coffre existe
+      final vaultDoc = await firestore.collection('vaults').doc(vaultId).get();
+      if (!vaultDoc.exists) {
+        throw VaultAccessFailure('Le coffre spécifié n\'existe pas');
+      }
+
+      // Vérifier si l'utilisateur actuel est le propriétaire du coffre
+      final currentUserId = auth.currentUser?.uid;
+      if (currentUserId == null) {
+        throw VaultAccessFailure('Vous devez être connecté pour révoquer l\'accès');
+      }
+
+      // Obtenir la liste des membres pour vérifier les rôles
+      final membersSnapshot = await firestore
+          .collection('vaults')
+          .doc(vaultId)
+          .collection('members')
+          .get();
+
+      // Vérifier si l'utilisateur actuel est propriétaire du coffre
+      bool isCurrentUserOwner = false;
+      bool isTargetUserOwner = false;
+
+      for (var memberDoc in membersSnapshot.docs) {
+        final data = memberDoc.data();
+        final memberUserId = data['userId'] as String;
+        final role = data['role'] as String;
+
+        if (memberUserId == currentUserId && role == 'owner') {
+          isCurrentUserOwner = true;
+        }
+
+        if (memberUserId == userId && role == 'owner') {
+          isTargetUserOwner = true;
+        }
+      }
+
+      // Seul un propriétaire peut révoquer l'accès
+      if (!isCurrentUserOwner) {
+        throw VaultAccessFailure('Vous devez être propriétaire du coffre pour révoquer l\'accès');
+      }
+
+      // Un propriétaire ne peut pas révoquer l'accès d'un autre propriétaire
+      if (isTargetUserOwner) {
+        throw VaultAccessFailure('Vous ne pouvez pas révoquer l\'accès d\'un propriétaire du coffre');
+      }
+
+      // Chercher le document du membre à supprimer
+      final memberQuery = await firestore
+          .collection('vaults')
+          .doc(vaultId)
+          .collection('members')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      if (memberQuery.docs.isEmpty) {
+        throw VaultAccessFailure('L\'utilisateur spécifié n\'a pas accès à ce coffre');
+      }
+
+      // Supprimer le membre de la liste des membres du coffre
+      await firestore
+          .collection('vaults')
+          .doc(vaultId)
+          .collection('members')
+          .doc(memberQuery.docs.first.id)
+          .delete();
+
+      // Optionnel : envoyer une notification à l'utilisateur dont l'accès a été révoqué
+      final revokedMemberData = memberQuery.docs.first.data();
+      final revokedMemberEmail = revokedMemberData['email'] as String?;
+
+      if (revokedMemberEmail != null) {
+        await _sendAccessRevokedNotification(
+          revokedMemberEmail,
+          vaultId,
+          vaultDoc.data()?['name'] ?? 'Vault',
+        );
+      }
+
+    } catch (e) {
+      throw VaultAccessFailure('Erreur lors de la révocation de l\'accès: ${e.toString()}');
+    }
+  }
+
+  Future<void> _sendAccessRevokedNotification(
+      String userEmail, String vaultId, String vaultName) async {
+    try {
+      final revokerEmail = auth.currentUser?.email ?? 'Un administrateur';
+
+      await firestore.collection('mail').add({
+        'to': userEmail,
+        'template': {
+          'name': 'accessRevoked',
+          'data': {
+            'revokerEmail': revokerEmail,
+            'vaultName': vaultName,
+          }
+        },
+      });
+    } catch (e) {
+      // Log l'erreur mais ne pas faire échouer le processus de révocation
+      debugPrint('Erreur lors de l\'envoi de la notification de révocation: ${e.toString()}');
+    }
+  }
 }
