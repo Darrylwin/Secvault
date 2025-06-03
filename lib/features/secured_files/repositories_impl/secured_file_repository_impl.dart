@@ -39,4 +39,16 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
       return Left(SecuredFileFailure("Error deleting file: $e"));
     }
   }
+
+  @override
+  Future<Either<SecuredFileFailure, List<SecuredFile>>> listSecuredFiles(
+      {required String vaultId}) async {
+    try {
+      final files =
+          await securedFileRemoteDatasource.listSecuredFiles(vaultId: vaultId);
+      return Right(files.map((file) => file.toEntity()).toList());
+    } catch (e) {
+      return Left(SecuredFileFailure("Error listing files: $e"));
+    }
+  }
 }
