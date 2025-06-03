@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:secvault/features/secured_files/data/datasources/remote/secured_file_remote_datasource.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:secvault/features/secured_files/data/models/secured_file_model.dart';
 import 'package:secvault/features/secured_files/domain/errors/secured_file_failure.dart';
 
 class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
@@ -39,6 +40,28 @@ class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
       });
     } catch (e) {
       throw SecuredFileFailure('Failed to upload secured file: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteSecuredFile({
+    required String fileId,
+    required vaultId,
+  }) async {
+    try {
+      // delete file from firebase storage
+      final storageRef = storage.ref().child('vaults/$vaultId/$fileId');
+      await storageRef.delete();
+
+      //delete metadata from firestore
+      await firestore
+          .collection('vaults')
+          .doc(vaultId)
+          .collection('files')
+          .doc(fileId)
+          .delete();
+    } catch (e) {
+      throw SecuredFileFailure('Failed to delete secured file: $e');
     }
   }
 }
