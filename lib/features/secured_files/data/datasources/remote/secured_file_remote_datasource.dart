@@ -9,7 +9,7 @@ abstract class SecuredFileRemoteDatasource {
 
   Future<void> deleteSecuredFile({
     required String fileId,
-    required vaultId,
+    required String vaultId,
   });
 
   Future<List<SecuredFileModel>> listSecuredFiles({required String vaultId});
