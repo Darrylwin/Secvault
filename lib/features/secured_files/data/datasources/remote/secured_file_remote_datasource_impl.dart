@@ -1,3 +1,44 @@
-import 'package:secvault/features/secured_files/data/datasources/remote/secured_file_remote_datasource.dart';
+import 'dart:typed_data';
 
-class SecuredFileRemoteDatasourceImpl  implements SecuredFileRemoteDatasource{}
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:secvault/features/secured_files/data/datasources/remote/secured_file_remote_datasource.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:secvault/features/secured_files/domain/errors/secured_file_failure.dart';
+
+class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
+  final FirebaseFirestore firestore;
+  final FirebaseStorage storage;
+
+  SecuredFileRemoteDatasourceImpl({
+    required this.storage,
+    required this.firestore,
+  });
+
+  @override
+  Future<void> uploadSecuredFile({
+    required String fileName,
+    required String vaultId,
+    required List<int> rawData,
+  }) async {
+    try {
+      //Generate a unique ID for the file
+      final docRef =
+          firestore.collection('vaults').doc(vaultId).collection('files').doc();
+      final fileId = docRef.id;
+
+      //upload encrypted data to Firebase Storage
+      final strorageRef = storage.ref().child("vaults/$vaultId/$fileId");
+      await strorageRef.putData(Uint8List.fromList(rawData));
+
+      //save metadata in firebase
+      await docRef.set({
+        'fileId': fileId,
+        'fileName': fileName,
+        'vaultId': vaultId,
+        'uploadedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      throw SecuredFileFailure('Failed to upload secured file: $e');
+    }
+  }
+}
