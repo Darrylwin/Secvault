@@ -14,7 +14,7 @@ abstract class SecuredFileRemoteDatasource {
 
   Future<List<SecuredFileModel>> listSecuredFiles({required String vaultId});
 
-  Future<void> downloadSecuredFile({
+  Future<SecuredFileModel> downloadSecuredFile({
     required String fileId,
     required String vaultId,
   });
