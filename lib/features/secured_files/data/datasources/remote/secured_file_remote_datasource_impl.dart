@@ -90,4 +90,40 @@ class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
       throw SecuredFileFailure("Failed to collect files : $e");
     }
   }
+
+  @override
+  Future<SecuredFileModel> downloadSecuredFile(
+      {required String fileId, required String vaultId}) async {
+    try {
+      //fetch data from firestore
+      final doc = await firestore
+          .collection('vaults')
+          .doc(vaultId)
+          .collection('files')
+          .doc(fileId)
+          .get();
+      final data = doc.data();
+
+      if (data == null) {
+        throw SecuredFileFailure.notFound();
+      }
+
+      // download encrypted data from Firebase Storage
+      final storageRef = storage.ref().child('vaults/$vaultId/$fileId');
+      final encrypteDataBytes = await storageRef.getData();
+      final encryptedDataBase64 = encrypteDataBytes != null
+          ? String.fromCharCodes(encrypteDataBytes)
+          : '';
+
+      return SecuredFileModel(
+        fileId: data['fileId'],
+        fileName: data['fileName'],
+        vaultId: data['vaultId'],
+        encryptedData: encryptedDataBase64,
+        uploadedAt: (data['uploadedAt'] as Timestamp).toDate(),
+      );
+    } catch (e) {
+      throw SecuredFileFailure('Failed to download secured file: $e');
+    }
+  }
 }
