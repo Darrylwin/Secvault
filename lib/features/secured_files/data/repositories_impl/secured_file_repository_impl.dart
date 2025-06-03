@@ -10,10 +10,11 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
   SecuredFileRepositoryImpl(this.securedFileRemoteDatasource);
 
   @override
-  Future<Either<SecuredFileFailure, void>> uploadSecuredFile(
-      {required String vaultId,
-      required String fileName,
-      required List<int> rawData}) async {
+  Future<Either<SecuredFileFailure, void>> uploadSecuredFile({
+    required String vaultId,
+    required String fileName,
+    required List<int> rawData,
+  }) async {
     try {
       await securedFileRemoteDatasource.uploadSecuredFile(
         fileName: fileName,
@@ -22,13 +23,15 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
       );
       return const Right(null);
     } catch (e) {
-      return Left(SecuredFileFailure("Error uploading file: $e"));
+      return Left(SecuredFileFailure('Failed to upload file: $e'));
     }
   }
 
   @override
-  Future<Either<SecuredFileFailure, void>> deleteSecuredFile(
-      {required String vaultId, required String fileId}) async {
+  Future<Either<SecuredFileFailure, void>> deleteSecuredFile({
+    required String fileId,
+    required String vaultId,
+  }) async {
     try {
       await securedFileRemoteDatasource.deleteSecuredFile(
         fileId: fileId,
@@ -36,35 +39,37 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
       );
       return const Right(null);
     } catch (e) {
-      return Left(SecuredFileFailure("Error deleting file: $e"));
+      return Left(SecuredFileFailure('Failed to delete file: $e'));
     }
   }
 
   @override
-  Future<Either<SecuredFileFailure, List<SecuredFile>>> listSecuredFiles(
-      {required String vaultId}) async {
+  Future<Either<SecuredFileFailure, List<SecuredFile>>> listSecuredFiles({
+    required String vaultId,
+  }) async {
     try {
       final files =
           await securedFileRemoteDatasource.listSecuredFiles(vaultId: vaultId);
-      return Right(files.map((file) => file.toEntity()).toList());
+      final filesEntities = files.map((model) => model.toEntity()).toList();
+      return Right(filesEntities);
     } catch (e) {
-      return Left(SecuredFileFailure("Error listing files: $e"));
+      return Left(SecuredFileFailure('Failed to fetch files: $e'));
     }
   }
 
   @override
   Future<Either<SecuredFileFailure, SecuredFile>> downloadSecuredFile({
-    required String vaultId,
     required String fileId,
+    required String vaultId,
   }) async {
     try {
-      final file = await securedFileRemoteDatasource.downloadSecuredFile(
+      final model = await securedFileRemoteDatasource.downloadSecuredFile(
         fileId: fileId,
         vaultId: vaultId,
       );
-      return Right(file.toEntity());
+      return Right(model.toEntity());
     } catch (e) {
-      return Left(SecuredFileFailure("Error downloadding file: $e"));
+      return Left(SecuredFileFailure('Failed to download file: $e'));
     }
   }
 }
