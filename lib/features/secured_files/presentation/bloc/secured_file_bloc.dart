@@ -15,12 +15,12 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
   final ListSecuredFilesUsecase listSecuredFilesUsecase;
   final UploadSecuredFileUsecase uploadSecuredFileUsecase;
 
-  SecuredFileBloc(
-    this.deleteSecuredFileUsecase,
-    this.downloadSecuredFileUsecase,
-    this.listSecuredFilesUsecase,
-    this.uploadSecuredFileUsecase,
-  ) : super(SecuredFileInitial()) {
+  SecuredFileBloc({
+    required this.deleteSecuredFileUsecase,
+    required this.downloadSecuredFileUsecase,
+    required this.listSecuredFilesUsecase,
+    required this.uploadSecuredFileUsecase,
+  }) : super(SecuredFileInitial()) {
     on<UploadSecuredFileEvent>(_onUploadSecuredFile);
     on<DeleteSecuredFileEvent>(_onDeleteSecuredFile);
     on<ListSecuredFilesEvent>(_onListSecuredFiles);
