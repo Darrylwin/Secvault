@@ -64,4 +64,30 @@ class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
       throw SecuredFileFailure('Failed to delete secured file: $e');
     }
   }
+
+  @override
+  Future<List<SecuredFileModel>> listSecuredFiles(
+      {required String vaultId}) async {
+    try {
+      // Fetch metadata from Firestore
+      final snapshot = await firestore
+          .collection('vauts')
+          .doc(vaultId)
+          .collection('files')
+          .get();
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return SecuredFileModel(
+          fileId: data['fileId'],
+          fileName: data['fileName'],
+          vaultId: data['vaultId'],
+          encryptedData: '',
+          /* Note: Not stored here, only fetched on download */
+          uploadedAt: data['uploadedAt'],
+        );
+      }).toList();
+    } catch (e) {
+      throw SecuredFileFailure("Failed to collect files : $e");
+    }
+  }
 }
