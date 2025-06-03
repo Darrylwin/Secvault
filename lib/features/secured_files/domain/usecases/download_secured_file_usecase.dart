@@ -3,10 +3,10 @@ import 'package:secvault/features/secured_files/domain/entities/secured_file.dar
 import 'package:secvault/features/secured_files/domain/errors/secured_file_failure.dart';
 import 'package:secvault/features/secured_files/domain/repositories/secure_file_repository.dart';
 
-class DownloadSecuredFile {
+class DownloadSecuredFileUsecase {
   final SecuredFileRepository securedFileRepository;
 
-  DownloadSecuredFile(this.securedFileRepository);
+  DownloadSecuredFileUsecase(this.securedFileRepository);
 
   Future<Either<SecuredFileFailure, SecuredFile>> call({
     required String vaultId,
