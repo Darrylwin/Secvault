@@ -33,10 +33,7 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -65,4 +62,14 @@ class DefaultFirebaseOptions {
     storageBucket: 'secvault-aaa90.firebasestorage.app',
     iosBundleId: 'darcode.secvault.secvault',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyDrL7nrcK4kyupG2Ow2O8KuD58aOgEEQO4',
+    appId: '1:850687054205:web:5c4350c776d5e1c8827c14',
+    messagingSenderId: '850687054205',
+    projectId: 'secvault-aaa90',
+    authDomain: 'secvault-aaa90.firebaseapp.com',
+    storageBucket: 'secvault-aaa90.firebasestorage.app',
+  );
+
 }
