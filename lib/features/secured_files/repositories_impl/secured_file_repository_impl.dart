@@ -51,4 +51,20 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
       return Left(SecuredFileFailure("Error listing files: $e"));
     }
   }
+
+  @override
+  Future<Either<SecuredFileFailure, SecuredFile>> downloadSecuredFile({
+    required String vaultId,
+    required String fileId,
+  }) async {
+    try {
+      final file = await securedFileRemoteDatasource.downloadSecuredFile(
+        fileId: fileId,
+        vaultId: vaultId,
+      );
+      return Right(file.toEntity());
+    } catch (e) {
+      return Left(SecuredFileFailure("Error downloadding file: $e"));
+    }
+  }
 }
