@@ -10,13 +10,13 @@ import 'secured_file_event.dart';
 import 'secured_file_state.dart';
 
 class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
-  final DeleteSecuredFileUsecase deleteFile;
+  final DeleteSecuredFileUsecase deleteSecuredFileUsecase;
   final DownloadSecuredFileUsecase downloadSecuredFileUsecase;
   final ListSecuredFilesUsecase listSecuredFilesUsecase;
   final UploadSecuredFileUsecase uploadSecuredFileUsecase;
 
   SecuredFileBloc(
-    this.deleteFile,
+    this.deleteSecuredFileUsecase,
     this.downloadSecuredFileUsecase,
     this.listSecuredFilesUsecase,
     this.uploadSecuredFileUsecase,
@@ -27,6 +27,60 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
     on<DownloadSecuredFileEvent>(_onDownloadSecuredFile);
   }
 
-  FutureOr<void> _onUploadSecuredFile(
-      UploadSecuredFileEvent event, Emitter<SecuredFileState> emit) {}
+  Future<void> _onUploadSecuredFile(
+    UploadSecuredFileEvent event,
+    Emitter<SecuredFileState> emit,
+  ) async {
+    emit(SecuredFileLoading());
+    final result = await uploadSecuredFileUsecase(
+      vaultId: event.vaultId,
+      fileName: event.fileName,
+      rawData: event.rawData,
+    );
+
+    result.fold(
+      (error) => emit(SecuredFileError(error.message)),
+      (success) => emit(SecuredFileSuccess()),
+    );
+  }
+
+  Future<void> _onDeleteSecuredFile(
+    DeleteSecuredFileEvent event,
+    Emitter<SecuredFileState> emit,
+  ) async {
+    emit(SecuredFileLoading());
+    final result = await deleteSecuredFileUsecase(
+      vaultId: event.vaultId,
+      fileId: event.fileId,
+    );
+
+    result.fold(
+      (error) => emit(SecuredFileError(error.message)),
+      (success) => emit(SecuredFileSuccess()),
+    );
+  }
+
+  Future<void> _onListSecuredFiles(
+    ListSecuredFilesEvent event,
+    Emitter<SecuredFileState> emit,
+  ) async {
+    final result = await listSecuredFilesUsecase(vaultId: event.vaultId);
+    result.fold(
+      (error) => emit(SecuredFileError(error.message)),
+      (files) => emit(SecuredFileListSuccess(files)),
+    );
+  }
+
+  Future<void> _onDownloadSecuredFile(
+      DownloadSecuredFileEvent event, Emitter<SecuredFileState> emit) async {
+    final result = await downloadSecuredFileUsecase(
+      vaultId: event.vaultId,
+      fileId: event.fileId,
+    );
+
+    result.fold(
+      (error) => emit(SecuredFileError(error.message)),
+      (file) => emit(SecuredFileDownloadSuccess(file)),
+    );
+  }
 }
