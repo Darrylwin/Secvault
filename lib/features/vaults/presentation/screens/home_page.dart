@@ -91,14 +91,15 @@ class _HomePageState extends State<HomePage> {
         builder: (context, state) {
           if (state is VaultLoaded) {
             if (state.vaults.isEmpty) return const SizedBox.shrink();
+            return FloatingActionButton.extended(
+              onPressed: showCreateVaultDialog,
+              backgroundColor: primaryColor,
+              icon: const Icon(Icons.add, color: Colors.white),
+              label: const Text('New Vault',
+                  style: TextStyle(color: Colors.white)),
+            );
           }
-          return FloatingActionButton.extended(
-            onPressed: showCreateVaultDialog,
-            backgroundColor: primaryColor,
-            icon: const Icon(Icons.add, color: Colors.white),
-            label:
-                const Text('New Vault', style: TextStyle(color: Colors.white)),
-          );
+          return const SizedBox.shrink();
         },
       ),
       body: Column(
