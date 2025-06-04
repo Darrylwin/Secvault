@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:secvault/features/secured_files/presentation/bloc/secured_file_bloc.dart';
+import 'package:secvault/features/secured_files/presentation/bloc/secured_file_state.dart';
+import 'package:secvault/features/secured_files/presentation/widgets/file_card.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
 import 'package:secvault/features/vaults/presentation/widgets/confirm_vault_delete_dialog.dart';
@@ -17,44 +20,6 @@ class VaultDetails extends StatelessWidget {
   final String vaultId;
   final String vaultName;
   final DateTime createdAt;
-
-  final List<Map<String, dynamic>> _files = [
-    {
-      'id': '1',
-      'vaultId': 'v1',
-      'fileName': 'personal_id.pdf',
-      'uploadDate': '2025-05-12',
-      'fileSize': '2.4 MB',
-    },
-    {
-      'id': '2',
-      'vaultId': 'v1',
-      'fileName': 'passport_scan.jpg',
-      'uploadDate': '2025-05-15',
-      'fileSize': '1.8 MB',
-    },
-    {
-      'id': '3',
-      'vaultId': 'v1',
-      'fileName': 'insurance_document.pdf',
-      'uploadDate': '2025-05-18',
-      'fileSize': '3.2 MB',
-    },
-    {
-      'id': '4',
-      'vaultId': 'v1',
-      'fileName': 'tax_return_2024.pdf',
-      'uploadDate': '2025-05-20',
-      'fileSize': '5.7 MB',
-    },
-    {
-      'id': '5',
-      'vaultId': 'v1',
-      'fileName': 'medical_records.pdf',
-      'uploadDate': '2025-05-25',
-      'fileSize': '8.3 MB',
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -160,33 +125,6 @@ class VaultDetails extends StatelessWidget {
                           ),
                         ],
                       ),
-                      // const SizedBox(height: 15),
-                      // LinearProgressIndicator(
-                      //   value: 0.45,
-                      //   backgroundColor: const Color(0xFFE0E0E0),
-                      //   valueColor: AlwaysStoppedAnimation<Color>(primaryColor),
-                      // ),
-                      // const SizedBox(height: 10),
-                      // Row(
-                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      //   children: [
-                      //     Text(
-                      //       'Storage used',
-                      //       style: TextStyle(
-                      //         fontSize: 14,
-                      //         color: Colors.grey[600],
-                      //       ),
-                      //     ),
-                      //     Text(
-                      //       '21.4 MB / 50 MB',
-                      //       style: TextStyle(
-                      //         fontSize: 14,
-                      //         fontWeight: FontWeight.bold,
-                      //         color: primaryColor,
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
                     ],
                   ),
                 ),
@@ -218,37 +156,110 @@ class VaultDetails extends StatelessWidget {
               ),
             ),
 
-            // Files header
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Secured Files',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    radius: 12,
-                    child: Text(
-                      '${_files.length}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
+            BlocBuilder<SecuredFileBloc, SecuredFileState>(
+              builder: (context, state) {
+                if (state is SecuredFileLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is SecuredFileListSuccess) {
+                  final files = state.files;
+                  if (files.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.folder_off_outlined,
+                            size: 80,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No secured files yet',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Upload files to secure them in this vault',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[500],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+                    );
+                  }
+                  return Center(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Files header
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text(
+                                'Secured Files',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              CircleAvatar(
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                radius: 12,
+                                child: Text(
+                                  '${files.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
 
-            // Files list
-            _buildFilesList(),
+                        // Files list
+                        ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
+                          itemCount: files.length,
+                          itemBuilder: (context, index) {
+                            final file = files[index];
+                            final String fileExtension =
+                                file.fileName.split('.').last.toLowerCase();
+                            return FileCard(
+                              fileExtension: fileExtension,
+                              fileName: file.fileName,
+                              uploaAt: file.uploadedAt,
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                } else if (state is SecuredFileError) {
+                  return Center(
+                    child: Text(
+                      'Error loading files: ${state.message}',
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ],
         ),
       ),
@@ -259,92 +270,6 @@ class VaultDetails extends StatelessWidget {
         icon: const Icon(Icons.add),
         label: const Text('Add File'),
       ),
-    );
-  }
-
-  Widget _buildFilesList() {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 80),
-      itemCount: _files.length,
-      itemBuilder: (context, index) {
-        final file = _files[index];
-        final String fileExtension =
-            file['fileName'].split('.').last.toLowerCase();
-
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: Card(
-            elevation: 2,
-            shadowColor: Colors.black12,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: ListTile(
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              leading: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Center(
-                  child: Text(
-                    fileExtension.toUpperCase(),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                  ),
-                ),
-              ),
-              title: Text(
-                file['fileName'],
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
-                ),
-              ),
-              subtitle: Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  'Uploaded: ${file['uploadDate']} • ${file['fileSize']}',
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.download_outlined,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    onPressed: () {
-                      // Download file action
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(
-                      Icons.delete_outline,
-                      color: Colors.grey,
-                    ),
-                    onPressed: () {
-                      // Delete file action
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
