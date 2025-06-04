@@ -155,8 +155,18 @@ class _VaultDetailsState extends State<VaultDetails> {
                     onTap: () {},
                   ),
                   MyActionButton(
-                    icon: Icons.share,
-                    label: 'Share',
+                    icon: Icons.people,
+                    label: 'Members',
+                    onTap: () {
+                      Navigator.of(context).pushNamed(
+                        '/vault-members',
+                        arguments: widget.vaultId,
+                      );
+                    },
+                  ),
+                  MyActionButton(
+                    icon: Icons.person_add,
+                    label: 'Invite',
                     onTap: () {},
                   ),
                   MyActionButton(
