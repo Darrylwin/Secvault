@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/features/secured_files/domain/usecases/delete_secured_file_usecase.dart';
 import 'package:secvault/features/secured_files/domain/usecases/upload_secured_file_usecase.dart';
@@ -39,8 +40,15 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
     );
 
     result.fold(
-      (error) => emit(SecuredFileError(error.message)),
-      (success) => emit(SecuredFileSuccess()),
+      (error) {
+        debugPrint('SecuredFileBloc: Failed to upload file: ${error.message}');
+        emit(SecuredFileError(error.message));
+      },
+      (success) {
+        debugPrint(
+            "SecurdFileBloc uploaded files: ${event.fileName} to vault: ${event.vaultId}");
+        emit(SecuredFileSuccess());
+      },
     );
   }
 
@@ -55,8 +63,15 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
     );
 
     result.fold(
-      (error) => emit(SecuredFileError(error.message)),
-      (success) => emit(SecuredFileSuccess()),
+      (error) {
+        debugPrint("SecuredFileBloc: Failed to delete file: ${error.message}");
+        emit(SecuredFileError(error.message));
+      },
+      (success) {
+        debugPrint(
+            "SecuredFileBloc deleted file ${event.fileId} from vault ${event.vaultId}");
+        emit(SecuredFileSuccess());
+      },
     );
   }
 
@@ -66,8 +81,15 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
   ) async {
     final result = await listSecuredFilesUsecase(vaultId: event.vaultId);
     result.fold(
-      (error) => emit(SecuredFileError(error.message)),
-      (files) => emit(SecuredFileListSuccess(files)),
+      (error) {
+        debugPrint("SecuredFileBloc failed to list files: ${error.message}");
+        emit(SecuredFileError(error.message));
+      },
+      (files) {
+        debugPrint(
+            "SecuredFileBloc listed files: ${files.length} files from vault: ${event.vaultId}");
+        emit(SecuredFileListSuccess(files));
+      },
     );
   }
 
@@ -79,8 +101,16 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
     );
 
     result.fold(
-      (error) => emit(SecuredFileError(error.message)),
-      (file) => emit(SecuredFileDownloadSuccess(file)),
+      (error) {
+        debugPrint(
+            "SecuredFileBloc failed downloading file ${event.fileId} from vault ${event.vaultId}");
+        emit(SecuredFileError(error.message));
+      },
+      (file) {
+        debugPrint(
+            "SecuredFileBloc downloaded file: ${file.fileName} from vault: ${event.vaultId}");
+        emit(SecuredFileDownloadSuccess(file));
+      },
     );
   }
 }
