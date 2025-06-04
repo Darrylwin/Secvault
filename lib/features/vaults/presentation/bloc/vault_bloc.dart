@@ -47,7 +47,7 @@ class VaultBloc extends Bloc<VaultEvent, VaultState> {
     Emitter<VaultState> emit,
   ) async {
     emit(VaultLoading());
-    final result = await createVault(name: event.name);
+    final result = await createVault(name: event.name, ownerId: currentUserId);
     result.fold(
       (failure) => emit(VaultError(failure.message)),
       (success) => add(LoadVaults()),

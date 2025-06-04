@@ -46,7 +46,7 @@ class MockVaultRepository extends _i1.Mock implements _i3.VaultRepository {
 
   @override
   _i4.Future<_i2.Either<_i5.VaultFailure, _i6.Vault>> createVault(
-          String? name) =>
+          String? name, String? userId) =>
       (super.noSuchMethod(
         Invocation.method(
           #createVault,

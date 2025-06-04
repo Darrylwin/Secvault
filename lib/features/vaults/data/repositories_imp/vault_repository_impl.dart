@@ -15,9 +15,9 @@ class VaultRepositoryImpl implements VaultRepository {
   const VaultRepositoryImpl(this._vaultRemoteDataSource);
 
   @override
-  Future<Either<VaultFailure, Vault>> createVault(String name) async {
+  Future<Either<VaultFailure, Vault>> createVault(String name, String userId) async {
     try {
-      final vaultModel = await _vaultRemoteDataSource.createVault(name);
+      final vaultModel = await _vaultRemoteDataSource.createVault(name, userId);
       return Right(vaultModel.toEntity());
     } on FirebaseException catch (error) {
       if (error.code == 'permission-denied') {

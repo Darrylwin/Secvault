@@ -87,11 +87,19 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       backgroundColor: Colors.white,
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: showCreateVaultDialog,
-        backgroundColor: primaryColor,
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('New Vault', style: TextStyle(color: Colors.white)),
+      floatingActionButton: BlocBuilder<VaultBloc, VaultState>(
+        builder: (context, state) {
+          if (state is VaultLoaded) {
+            if (state.vaults.isEmpty) return const SizedBox.shrink();
+          }
+          return FloatingActionButton.extended(
+            onPressed: showCreateVaultDialog,
+            backgroundColor: primaryColor,
+            icon: const Icon(Icons.add, color: Colors.white),
+            label:
+                const Text('New Vault', style: TextStyle(color: Colors.white)),
+          );
+        },
       ),
       body: Column(
         children: [
