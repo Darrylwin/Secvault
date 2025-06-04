@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:secvault/features/secured_files/data/datasources/remote/secured_file_remote_datasource.dart';
 import 'package:secvault/features/secured_files/domain/entities/secured_file.dart';
 import 'package:secvault/features/secured_files/domain/errors/secured_file_failure.dart';
@@ -22,12 +21,9 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
         vaultId: vaultId,
         rawData: rawData,
       );
-      debugPrint(
-        'FileRepository had uploaded file: SecuredFile(fileName: "$fileName", vaultId: $vaultId, rawData: ${rawData.length} bytes)',
-      );
+
       return const Right(null);
     } catch (e) {
-      debugPrint("FileRepository failed uploading file: $e");
       return Left(SecuredFileFailure('Failed to upload file: $e'));
     }
   }
@@ -42,11 +38,8 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
         fileId: fileId,
         vaultId: vaultId,
       );
-      debugPrint(
-          "FileRepository had deleted file: $fileId from vault: $vaultId");
       return const Right(null);
     } catch (e) {
-      debugPrint("FileRepository failed to delete file: $e");
       return Left(SecuredFileFailure('Failed to delete file: $e'));
     }
   }
@@ -59,12 +52,9 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
       final files =
           await securedFileRemoteDatasource.listSecuredFiles(vaultId: vaultId);
       final filesEntities = files.map((model) => model.toEntity()).toList();
-      debugPrint(
-        "FileRepository had fetched files: $filesEntities files from vault: $vaultId",
-      );
+
       return Right(filesEntities);
     } catch (e) {
-      debugPrint("FileRepository failed to fetch file: $e");
       return Left(SecuredFileFailure('Failed to fetch files: $e'));
     }
   }
@@ -79,12 +69,9 @@ class SecuredFileRepositoryImpl implements SecuredFileRepository {
         fileId: fileId,
         vaultId: vaultId,
       );
-      debugPrint(
-        "FileRepository had downloaded file: $fileId from vault $vaultId",
-      );
+
       return Right(model.toEntity());
     } catch (e) {
-      debugPrint("Filerepository failed downloading file: $e");
       return Left(SecuredFileFailure('Failed to download file: $e'));
     }
   }
