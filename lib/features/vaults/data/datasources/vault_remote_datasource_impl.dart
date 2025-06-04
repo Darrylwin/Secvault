@@ -8,11 +8,32 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   VaultRemoteDataSourceImpl({required this.firestore});
 
   @override
-  Future<VaultModel> createVault(String name) async {
+  Future<VaultModel> createVault(String name, String userId) async {
     try {
+      // 1. Récupérer les informations de l'utilisateur pour compléter les champs du VaultMember
+      // Cette étape dépend de comment vous stockez les informations utilisateurs dans votre app
+      // Vous pourriez avoir besoin d'une requête à la collection 'users' par exemple
+      final userDoc = await firestore.collection('users').doc(userId).get();
+      final userName = userDoc.data()?['name'] ?? 'Unnamed User';
+      final userEmail = userDoc.data()?['email'] ?? '';
+
+      // 2. Créer le vault
       final docRef = await firestore.collection('vaults').add({
         'name': name,
         'createdAt': Timestamp.fromDate(DateTime.now()),
+        'ownerId': userId, // Ajouter l'ID du propriétaire dans le document du vault
+      });
+
+      // 3. Ajouter l'utilisateur comme membre avec le rôle de propriétaire
+      // en respectant la structure de VaultMember
+      await docRef.collection('members').add({
+        'userId': userId,
+        'userName': userName,
+        'email': userEmail,
+        'role': 'owner', // Correspond à UserRole.owner
+        'invitedAt': Timestamp.fromDate(DateTime.now()),
+        'invitedBy': userId, // Le créateur s'invite lui-même
+        'status': 'accepted' // Le statut est automatiquement accepté pour le créateur
       });
 
       final snapshot = await docRef.get();
@@ -46,40 +67,30 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   @override
   Future<List<VaultModel>> getAccessibleVaults(String userId) async {
     try {
-      // 1. D'abord, récupérer les IDs des vaults auxquels l'utilisateur a accès
-      final accessSnapshot = await firestore
-          .collection('vault_access')
-          .where('userId', isEqualTo: userId)
-          .get();
+      // 1. Récupérer tous les vaults
+      final vaultsSnapshot = await firestore.collection('vaults').get();
 
-      // Si l'utilisateur n'a accès à aucun vault, retourner une liste vide
-      if (accessSnapshot.docs.isEmpty) {
-        return [];
-      }
+      // 2. Vérifier chaque vault pour voir si l'utilisateur est membre
+      List<VaultModel> accessibleVaults = [];
 
-      // 2. Extraire les IDs des vaults accessibles
-      final vaultIds = accessSnapshot.docs.map((doc) => doc['vaultId'] as String).toList();
+      for (var vaultDoc in vaultsSnapshot.docs) {
+        final vaultId = vaultDoc.id;
 
-      // 3. Récupérer les vaults correspondant à ces IDs
-      // Note: Firestore ne permet pas de faire un 'whereIn' avec plus de 10 valeurs,
-      // donc nous gérons ce cas en faisant plusieurs requêtes si nécessaire
-      List<VaultModel> allVaults = [];
-
-      // Diviser la liste des IDs en groupes de 10 maximum
-      for (int i = 0; i < vaultIds.length; i += 10) {
-        final end = (i + 10 < vaultIds.length) ? i + 10 : vaultIds.length;
-        final batchIds = vaultIds.sublist(i, end);
-
-        final batchSnapshot = await firestore
+        // Vérifier si l'utilisateur est membre de ce vault
+        final membershipSnapshot = await firestore
             .collection('vaults')
-            .where(FieldPath.documentId, whereIn: batchIds)
+            .doc(vaultId)
+            .collection('members')
+            .where('userId', isEqualTo: userId)
             .get();
 
-        final batchVaults = batchSnapshot.docs.map((doc) => VaultModel.fromFirestore(doc)).toList();
-        allVaults.addAll(batchVaults);
+        // Si l'utilisateur est membre de ce vault, l'ajouter à la liste des vaults accessibles
+        if (membershipSnapshot.docs.isNotEmpty) {
+          accessibleVaults.add(VaultModel.fromFirestore(vaultDoc));
+        }
       }
 
-      return allVaults;
+      return accessibleVaults;
     } catch (e) {
       throw Exception('Failed to fetch accessible vaults: $e');
     }

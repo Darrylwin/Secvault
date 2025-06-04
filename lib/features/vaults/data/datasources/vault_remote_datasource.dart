@@ -1,7 +1,7 @@
 import '../models/vault_model.dart';
 
 abstract class VaultRemoteDataSource {
-  Future<VaultModel> createVault(String name);
+  Future<VaultModel> createVault(String name, String userId);
 
   Future<void> deleteVault(String vaultId);
 
