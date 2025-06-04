@@ -9,4 +9,6 @@ abstract class VaultRepository {
   Future<Either<VaultFailure, void>> deleteVault(String vaultId);
 
   Future<Either<VaultFailure, List<Vault>>> getAllVaults();
+
+  Future<Either<VaultFailure, List<Vault>>> getAccessibleVaults(String userId);
 }
