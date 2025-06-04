@@ -74,4 +74,31 @@ class VaultRepositoryImpl implements VaultRepository {
       return Left(VaultFailure.unknown(error));
     }
   }
+
+  @override
+  Future<Either<VaultFailure, List<Vault>>> getAccessibleVaults(String userId) async {
+    try {
+      final vaults = await _vaultRemoteDataSource.getAccessibleVaults(userId);
+      debugPrint("VaultRepository had fetched accessible vaults: $vaults"); //for debugging
+      return Right(vaults.map((vault) => vault.toEntity()).toList());
+    } on FirebaseException catch (error) {
+      if (error.code == 'permission-denied') {
+        debugPrint(
+            "VaultRepository Error fetching accessible vaults: ${error.message}"); //for debugging
+        return Left(VaultFailure.permissionDenied());
+      } else {
+        debugPrint(
+            "VaultRepository Error fetching accessible vaults: ${error.message}"); //for debugging
+        return Left(VaultFailure.unknown(error.message ?? ''));
+      }
+    } on SocketException {
+      debugPrint(
+          "VaultRepository Error fetching accessible vaults: SocketException"); //for debugging
+      return Left(VaultFailure.network());
+    } catch (error) {
+      debugPrint(
+          "VaultRepository Error fetching accessible vaults: $error"); //for debugging
+      return Left(VaultFailure.unknown(error));
+    }
+  }
 }
