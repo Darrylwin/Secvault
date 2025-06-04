@@ -35,6 +35,7 @@ import 'features/access_control/presentation/bloc/vault_access_bloc.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/domain/usecases/login.dart';
 import 'features/vaults/data/repositories_imp/vault_repository_impl.dart';
+import 'features/vaults/domain/usecases/get_accessible_vaults_usecase.dart';
 import 'features/vaults/presentation/screens/home_page.dart';
 import 'firebase_options.dart';
 
@@ -64,6 +65,7 @@ void main() async {
   final createVault = CreateVaultUsecase(vaultRepository);
   final deleteVault = DeleteVaultUsecase(vaultRepository);
   final getAllVaults = GetAllVaultsUsecase(vaultRepository);
+  final getAccessibleVaults = GetAccessibleVaultsUsecase(vaultRepository);
 
   /*access controll feature*/
   final vaultAccessRemoteDatasource = VaultAccessRemoteDatasourceImpl(
@@ -106,6 +108,8 @@ void main() async {
             deleteVault: deleteVault,
             createVault: createVault,
             getAllVaults: getAllVaults,
+            getAccessibleVaults: getAccessibleVaults,
+            currentUserId: firebaseAuthInstance.currentUser?.uid ?? '',
           ),
         ),
         BlocProvider(
