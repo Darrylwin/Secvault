@@ -8,7 +8,10 @@ class CreateVaultUsecase {
 
   CreateVaultUsecase(this.vaultRepository);
 
-  Future<Either<VaultFailure, Vault>> call({required String name}) async {
-    return await vaultRepository.createVault(name);
+  Future<Either<VaultFailure, Vault>> call({
+    required String name,
+    required String ownerId,
+  }) async {
+    return await vaultRepository.createVault(name, ownerId);
   }
 }
