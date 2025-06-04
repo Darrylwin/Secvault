@@ -42,4 +42,46 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
       throw Exception('Failed to fetch vaults: $e');
     }
   }
+
+  @override
+  Future<List<VaultModel>> getAccessibleVaults(String userId) async {
+    try {
+      // 1. D'abord, récupérer les IDs des vaults auxquels l'utilisateur a accès
+      final accessSnapshot = await firestore
+          .collection('vault_access')
+          .where('userId', isEqualTo: userId)
+          .get();
+
+      // Si l'utilisateur n'a accès à aucun vault, retourner une liste vide
+      if (accessSnapshot.docs.isEmpty) {
+        return [];
+      }
+
+      // 2. Extraire les IDs des vaults accessibles
+      final vaultIds = accessSnapshot.docs.map((doc) => doc['vaultId'] as String).toList();
+
+      // 3. Récupérer les vaults correspondant à ces IDs
+      // Note: Firestore ne permet pas de faire un 'whereIn' avec plus de 10 valeurs,
+      // donc nous gérons ce cas en faisant plusieurs requêtes si nécessaire
+      List<VaultModel> allVaults = [];
+
+      // Diviser la liste des IDs en groupes de 10 maximum
+      for (int i = 0; i < vaultIds.length; i += 10) {
+        final end = (i + 10 < vaultIds.length) ? i + 10 : vaultIds.length;
+        final batchIds = vaultIds.sublist(i, end);
+
+        final batchSnapshot = await firestore
+            .collection('vaults')
+            .where(FieldPath.documentId, whereIn: batchIds)
+            .get();
+
+        final batchVaults = batchSnapshot.docs.map((doc) => VaultModel.fromFirestore(doc)).toList();
+        allVaults.addAll(batchVaults);
+      }
+
+      return allVaults;
+    } catch (e) {
+      throw Exception('Failed to fetch accessible vaults: $e');
+    }
+  }
 }

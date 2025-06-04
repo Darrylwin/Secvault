@@ -6,4 +6,6 @@ abstract class VaultRemoteDataSource {
   Future<void> deleteVault(String vaultId);
 
   Future<List<VaultModel>> getAllVaults();
+
+  Future<List<VaultModel>> getAccessibleVaults(String userId);
 }
