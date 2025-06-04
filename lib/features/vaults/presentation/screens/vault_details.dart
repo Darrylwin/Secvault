@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_bloc.dart';
+import 'package:secvault/features/secured_files/presentation/bloc/secured_file_event.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_state.dart';
 import 'package:secvault/features/secured_files/presentation/widgets/file_card.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
@@ -9,8 +10,8 @@ import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
 import 'package:secvault/features/vaults/presentation/widgets/confirm_vault_delete_dialog.dart';
 import 'package:secvault/features/vaults/presentation/widgets/my_action_button.dart';
 
-class VaultDetails extends StatelessWidget {
-  VaultDetails({
+class VaultDetails extends StatefulWidget {
+  const VaultDetails({
     super.key,
     required this.vaultId,
     required this.vaultName,
@@ -22,13 +23,24 @@ class VaultDetails extends StatelessWidget {
   final DateTime createdAt;
 
   @override
+  State<VaultDetails> createState() => _VaultDetailsState();
+}
+
+class _VaultDetailsState extends State<VaultDetails> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<SecuredFileBloc>().add(ListSecuredFilesEvent(widget.vaultId));
+  }
+
+  @override
   Widget build(BuildContext context) {
     void Function()? onDeleteVaultTapped() {
       showDialog(
         context: context,
         builder: (context) => ConfirmVaultDeleteDialog(
           onPressed: () {
-            context.read<VaultBloc>().add(DeleteVault(vaultId));
+            context.read<VaultBloc>().add(DeleteVault(widget.vaultId));
             Navigator.of(context).pop();
             Navigator.of(context).pop();
           },
@@ -82,7 +94,7 @@ class VaultDetails extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                vaultName,
+                                widget.vaultName,
                                 style: const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
@@ -98,7 +110,7 @@ class VaultDetails extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
-                                    'Created on ${DateFormat('MMM dd, yyyy').format(createdAt)}',
+                                    'Created on ${DateFormat('MMM dd, yyyy').format(widget.createdAt)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey[600],
