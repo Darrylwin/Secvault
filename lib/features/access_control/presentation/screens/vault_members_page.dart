@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/features/access_control/presentation/bloc/vault_access_bloc.dart';
+import 'package:secvault/features/access_control/presentation/bloc/vault_access_event.dart';
 import 'package:secvault/features/access_control/presentation/bloc/vault_access_state.dart';
 import 'package:secvault/features/access_control/presentation/widgets/confirm_revoke_user_dialog.dart';
 import 'package:secvault/features/access_control/presentation/widgets/invite_user_dialog.dart';
@@ -8,21 +9,37 @@ import 'package:secvault/features/access_control/presentation/widgets/vault_memb
 
 import '../../../../core/themes/light_theme.dart';
 
-class VaultMembersPage extends StatelessWidget {
+class VaultMembersPage extends StatefulWidget {
   final String vaultId;
-  final TextEditingController userEmailController = TextEditingController();
 
-  VaultMembersPage({
+  const VaultMembersPage({
     super.key,
     required this.vaultId,
   });
+
+  @override
+  State<VaultMembersPage> createState() => _VaultMembersPageState();
+}
+
+class _VaultMembersPageState extends State<VaultMembersPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<VaultAccessBloc>().add(
+          ListVaultMembersEvent(
+            vaultId: widget.vaultId,
+          ),
+        );
+  }
+
+  final TextEditingController userEmailController = TextEditingController();
 
   void showInviteUserDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (context) => InviteUserDialog(
         userEmailController: userEmailController,
-        vaultId: vaultId,
+        vaultId: widget.vaultId,
       ),
     );
   }
@@ -36,7 +53,7 @@ class VaultMembersPage extends StatelessWidget {
       context: context,
       builder: (context) => ConfirmRevokeUserDialog(
         userName: userName,
-        vaultId: vaultId,
+        vaultId: widget.vaultId,
         userId: userId,
       ),
     );
@@ -95,6 +112,19 @@ class VaultMembersPage extends StatelessWidget {
                         color: Theme.of(context).colorScheme.error,
                         fontSize: 16),
                     textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.read<VaultAccessBloc>().add(
+                          ListVaultMembersEvent(
+                            vaultId: widget.vaultId,
+                          ),
+                        ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primaryColor,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Retry'),
                   ),
                 ],
               ),
