@@ -22,6 +22,10 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
     required String userEmail,
     required UserRole role,
   }) async {
+/*
+    TODO: pour la methode inviteUserToVault il ne faudarait pas juste ajouter l'email comme ça. Il faudrait verifier que l'email existe dasn notre application d'abord.
+     Si oui on lui envoie un email via firebase et en cliquant sur le lien dasn cet email il aura accès
+*/
     try {
       // Vérifier si le coffre existe
       final vaultDoc = await firestore.collection('vaults').doc(vaultId).get();
