@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
@@ -40,8 +41,8 @@ void main() {
       // Assert
       expect(result.isRight(), true);
       result.fold(
-            (failure) => fail('Devrait retourner une liste de vaults'),
-            (vaultList) {
+        (failure) => fail('Devrait retourner une liste de vaults'),
+        (vaultList) {
           expect(vaultList, isA<List<Vault>>());
           expect(vaultList.length, 2);
           expect(vaultList[0].name, 'Vault 1');
@@ -56,6 +57,7 @@ void main() {
     late VaultRepositoryImpl repository;
     late GetAllVaultsUsecase usecase;
     late FirebaseFirestore firestoreInstance;
+    late FirebaseAuth firebaseAuth;
 
     setUpAll(() async {
       await Firebase.initializeApp(
@@ -70,8 +72,11 @@ void main() {
         sslEnabled: true,
       );
 
+      firebaseAuth = FirebaseAuth.instance;
+
       final remoteDataSource = VaultRemoteDataSourceImpl(
         firestore: firestoreInstance,
+        auth: firebaseAuth,
       );
       repository = VaultRepositoryImpl(remoteDataSource);
       usecase = GetAllVaultsUsecase(repository);
@@ -106,26 +111,24 @@ void main() {
               'Délai d\'attente dépassé lors de la récupération des vaults'));
         });
 
-        debugPrint('VaultRepository had fetched datas: ${result.isRight()
-            ? "success"
-            : "failure"}');
+        debugPrint(
+            'VaultRepository had fetched datas: ${result.isRight() ? "success" : "failure"}');
 
         // Vérifier le résultat
         if (result.isLeft()) {
           result.fold(
-                  (failure) => debugPrint('Erreur: ${failure.toString()}'),
-                  (_) {}
-          );
+              (failure) => debugPrint('Erreur: ${failure.toString()}'), (_) {});
           // Ne pas faire échouer le test en cas d'erreur réseau
           expect(true, isTrue,
-              reason: 'Le test est marqué comme réussi malgré l\'erreur réseau');
+              reason:
+                  'Le test est marqué comme réussi malgré l\'erreur réseau');
         } else {
-          expect(
-              result.isRight(), true, reason: 'La récupération doit réussir');
+          expect(result.isRight(), true,
+              reason: 'La récupération doit réussir');
           result.fold(
-                (failure) =>
+            (failure) =>
                 fail('Erreur lors de la récupération: ${failure.toString()}'),
-                (vaultList) {
+            (vaultList) {
               debugPrint('Vaults récupérés: ${vaultList.length}');
               for (final vault in vaultList) {
                 debugPrint('id: ${vault.id}, name: ${vault.name}');

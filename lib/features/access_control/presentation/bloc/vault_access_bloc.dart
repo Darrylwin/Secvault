@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/features/access_control/domain/usecases/invite_user_to_vault_useacse.dart';
 import 'package:secvault/features/access_control/domain/usecases/list_vault_members_usecase.dart';
@@ -32,8 +33,14 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
     );
 
     result.fold(
-      (error) => emit(VaultAccessError('$error')),
-      (success) => emit(VaultAccessSuccess("User successfully inited")),
+      (error) {
+        debugPrint("Error inviting user: $error");
+        emit(VaultAccessError('$error'));
+      },
+      (success) {
+        debugPrint('VaultAccessBloc - User invited successfully');
+        emit(VaultAccessSuccess("User successfully inited"));
+      },
     );
   }
 
@@ -42,8 +49,15 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
     emit(VaultAccessLoading());
     final members = await listVaultMembersUseacse(vaultId: event.vaultId);
     members.fold(
-      (error) => emit(VaultAccessError(error.toString())),
-      (successs) => emit(VaultMembersLoaded(successs)),
+      (error) {
+        debugPrint("VaultAccessBloc - Error listing vault members: $error");
+        emit(VaultAccessError(error.toString()));
+      },
+      (successs) {
+        debugPrint(
+            "VaultAccessBloc - Vault members loaded successfully : $members");
+        emit(VaultMembersLoaded(successs));
+      },
     );
   }
 
@@ -57,8 +71,14 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
     );
 
     result.fold(
-      (error) => emit(VaultAccessError(error.toString())),
-      (success) => emit(VaultAccessSuccess("User access revoked successfully")),
+      (error) {
+        debugPrint("VaultAccessBloc failed while revoke user access: $error");
+        emit(VaultAccessError(error.toString()));
+      },
+      (success) {
+        debugPrint("VaultAccessBloc - User access revoked successfully");
+        emit(VaultAccessSuccess("User access revoked successfully"));
+      },
     );
   }
 }
