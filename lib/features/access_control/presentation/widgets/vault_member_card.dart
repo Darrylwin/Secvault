@@ -74,7 +74,7 @@ class VaultMemberCard extends StatelessWidget {
               Icons.delete_outline,
               color: Theme.of(context).colorScheme.error,
             ),
-            onPressed: () => showConfirmRevokeUserDialog,
+            onPressed: showConfirmRevokeUserDialog,
           ),
         ),
       );
