@@ -45,9 +45,6 @@ class InviteUserDialog extends StatelessWidget {
                   ),
                 );
                 Navigator.of(context).pop();
-                Future.delayed(const Duration(milliseconds: 300), () {
-                  bloc.add(ListVaultMembersEvent(vaultId: vaultId));
-                });
               } else {
                 Navigator.of(context).pop();
               }

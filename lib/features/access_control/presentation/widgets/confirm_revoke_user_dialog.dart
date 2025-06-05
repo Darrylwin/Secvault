@@ -36,10 +36,6 @@ class ConfirmRevokeUserDialog extends StatelessWidget {
                   userId: userId,
                 ),
               );
-              // Rafraîchir la liste des membres après la révocation
-              Future.delayed(const Duration(milliseconds: 300), () {
-                bloc.add(ListVaultMembersEvent(vaultId: vaultId));
-              });
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
