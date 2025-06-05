@@ -37,9 +37,21 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
         debugPrint("Error inviting user: $error");
         emit(VaultAccessError('$error'));
       },
-      (success) {
+      (success) async {
         debugPrint('VaultAccessBloc - User invited successfully');
-        emit(VaultAccessSuccess("User successfully inited"));
+        //apres une invitation réussie, on liste les membres du vault
+        final members = await listVaultMembersUseacse(vaultId: event.vaultId);
+        members.fold(
+          (error) {
+            debugPrint("VaultAccessBloc - Error listing vault members: $error");
+            emit(VaultAccessError(error.toString()));
+          },
+          (success) {
+            debugPrint(
+                "VaultAccessBloc - Vault members loaded successfully : $members");
+            emit(VaultMembersLoaded(success));
+          },
+        );
       },
     );
   }
@@ -53,10 +65,10 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
         debugPrint("VaultAccessBloc - Error listing vault members: $error");
         emit(VaultAccessError(error.toString()));
       },
-      (successs) {
+      (success) {
         debugPrint(
             "VaultAccessBloc - Vault members loaded successfully : $members");
-        emit(VaultMembersLoaded(successs));
+        emit(VaultMembersLoaded(success));
       },
     );
   }
@@ -75,9 +87,21 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
         debugPrint("VaultAccessBloc failed while revoke user access: $error");
         emit(VaultAccessError(error.toString()));
       },
-      (success) {
+      (success) async {
         debugPrint("VaultAccessBloc - User access revoked successfully");
-        emit(VaultAccessSuccess("User access revoked successfully"));
+        //apres une révocation réussie, on liste les membres du vault
+        final members = await listVaultMembersUseacse(vaultId: event.vaultId);
+        members.fold(
+          (error) {
+            debugPrint("VaultAccessBloc - Error listing vault members: $error");
+            emit(VaultAccessError(error.toString()));
+          },
+          (success) {
+            debugPrint(
+                "VaultAccessBloc - Vault members loaded successfully : $members");
+            emit(VaultMembersLoaded(success));
+          },
+        );
       },
     );
   }
