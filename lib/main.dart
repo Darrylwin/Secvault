@@ -58,8 +58,10 @@ void main() async {
   final getCurrentUser = GetCurrentUser(authRepository);
 
   /* vault feature */
-  final vaultRemoteDatasource =
-      VaultRemoteDataSourceImpl(firestore: firestoreInstance);
+  final vaultRemoteDatasource = VaultRemoteDataSourceImpl(
+    firestore: firestoreInstance,
+    auth: firebaseAuthInstance,
+  );
   final vaultRepository = VaultRepositoryImpl(vaultRemoteDatasource);
 
   final createVault = CreateVaultUsecase(vaultRepository);
