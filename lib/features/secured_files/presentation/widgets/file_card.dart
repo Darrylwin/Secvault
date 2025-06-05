@@ -6,11 +6,15 @@ class FileCard extends StatelessWidget {
     required this.fileExtension,
     required this.fileName,
     required this.uploaAt,
+    required this.onDownloadPressed,
+    required this.onDeletePressed,
   });
 
   final String fileExtension;
   final String fileName;
   final DateTime uploaAt;
+  final VoidCallback onDownloadPressed;
+  final VoidCallback onDeletePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -67,18 +71,14 @@ class FileCard extends StatelessWidget {
                   Icons.download_outlined,
                   color: Theme.of(context).colorScheme.primary,
                 ),
-                onPressed: () {
-                  // Download file action
-                },
+                onPressed: onDownloadPressed,
               ),
               IconButton(
                 icon: const Icon(
                   Icons.delete_outline,
                   color: Colors.grey,
                 ),
-                onPressed: () {
-                  // Delete file action
-                },
+                onPressed: onDeletePressed,
               ),
             ],
           ),
