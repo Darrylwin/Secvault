@@ -1,3 +1,4 @@
+import 'package:cross_file_picker/cross_file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -46,6 +47,30 @@ class _VaultDetailsState extends State<VaultDetails> {
           },
         ),
       );
+    }
+
+    Future<void Function()?> uploadFile() async {
+      try {
+        final picker = CrossFilePicker();
+        final result = await picker.pickSingleFile(type: FileType.any);
+
+        if (result != null) {
+          final fileName = result.name;
+          final fileBytes = await result.readAsBytes();
+
+          context.read<SecuredFileBloc>().add(
+                UploadSecuredFileEvent(
+                  vaultId: widget.vaultId,
+                  fileName: fileName,
+                  rawData: fileBytes,
+                ),
+              );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     }
 
     return Scaffold(
@@ -286,9 +311,7 @@ class _VaultDetailsState extends State<VaultDetails> {
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // Add file action
-        },
+        onPressed: uploadFile,
         icon: const Icon(Icons.add),
         label: const Text('Add File'),
       ),
