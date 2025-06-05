@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:crypto/crypto.dart';
 
 class EncryptionHelper {
-  static final _key =
-      encrypt.Key.fromUtf8('32charslongsecretkeyhere!!12345678'); // 32 chars
+  // Génère une clé de 32 octets (256 bits) en appliquant SHA-256
+  static final _key = encrypt.Key.fromBase64(base64Encode(
+      sha256.convert(utf8.encode('32charslongsecretkeyhere!!12345678')).bytes));
   static final _iv = encrypt.IV.fromLength(16);
 
   static List<int> encryptData(List<int> data) {
