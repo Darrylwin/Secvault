@@ -1,21 +1,31 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:secvault/features/vaults/domain/errors/vault_failure.dart';
 import '../models/vault_model.dart';
 import 'vault_remote_datasource.dart';
 
 class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
   final FirebaseFirestore firestore;
+  final FirebaseAuth auth;
 
-  VaultRemoteDataSourceImpl({required this.firestore});
+  VaultRemoteDataSourceImpl({
+    required this.firestore,
+    required this.auth,
+  });
 
   @override
   Future<VaultModel> createVault(String name, String userId) async {
     try {
-      // 1. Récupérer les informations de l'utilisateur pour compléter les champs du VaultMember
-      // Cette étape dépend de comment vous stockez les informations utilisateurs dans votre app
-      // Vous pourriez avoir besoin d'une requête à la collection 'users' par exemple
-      final userDoc = await firestore.collection('users').doc(userId).get();
-      final userName = userDoc.data()?['name'] ?? 'Unnamed User';
-      final userEmail = userDoc.data()?['email'] ?? '';
+      // 1. Obtenir les informations de l'utilisateur depuis Firebase Auth
+      final User? currentUser = auth.currentUser;
+
+      // Vérifier que l'ID utilisateur correspond bien à l'utilisateur connecté
+      if (currentUser == null || currentUser.uid != userId) {
+        throw const VaultFailure('User not authenticated or IDs do not match');
+      }
+
+      final String userName = currentUser.email?.split('@').first ?? 'User';
+      final String userEmail = currentUser.displayName ?? '';
 
       // 2. Créer le vault
       final docRef = await firestore.collection('vaults').add({
@@ -25,12 +35,11 @@ class VaultRemoteDataSourceImpl implements VaultRemoteDataSource {
       });
 
       // 3. Ajouter l'utilisateur comme membre avec le rôle de propriétaire
-      // en respectant la structure de VaultMember
       await docRef.collection('members').add({
         'userId': userId,
         'userName': userName,
         'email': userEmail,
-        'role': 'owner', // Correspond à UserRole.owner
+        'role': 'owner', // Le rôle du créateur est 'owner'
         'invitedAt': Timestamp.fromDate(DateTime.now()),
         'invitedBy': userId, // Le créateur s'invite lui-même
         'status': 'accepted' // Le statut est automatiquement accepté pour le créateur
