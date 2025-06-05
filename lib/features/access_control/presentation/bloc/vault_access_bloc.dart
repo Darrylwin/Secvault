@@ -32,8 +32,8 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
       role: event.role,
     );
 
-    result.fold(
-      (error) {
+    await result.fold(
+      (error) async {
         debugPrint("Error inviting user: $error");
         emit(VaultAccessError('$error'));
       },
@@ -41,12 +41,12 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
         debugPrint('VaultAccessBloc - User invited successfully');
         //apres une invitation réussie, on liste les membres du vault
         final members = await listVaultMembersUseacse(vaultId: event.vaultId);
-        members.fold(
-          (error) {
+        await members.fold(
+          (error) async {
             debugPrint("VaultAccessBloc - Error listing vault members: $error");
             emit(VaultAccessError(error.toString()));
           },
-          (success) {
+          (success) async {
             debugPrint(
                 "VaultAccessBloc - Vault members loaded successfully : $members");
             emit(VaultMembersLoaded(success));
@@ -60,12 +60,12 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
       ListVaultMembersEvent event, Emitter<VaultAccessState> emit) async {
     emit(VaultAccessLoading());
     final members = await listVaultMembersUseacse(vaultId: event.vaultId);
-    members.fold(
-      (error) {
+    await members.fold(
+      (error) async {
         debugPrint("VaultAccessBloc - Error listing vault members: $error");
         emit(VaultAccessError(error.toString()));
       },
-      (success) {
+      (success) async {
         debugPrint(
             "VaultAccessBloc - Vault members loaded successfully : $members");
         emit(VaultMembersLoaded(success));
@@ -82,8 +82,8 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
       userId: event.userId,
     );
 
-    result.fold(
-      (error) {
+    await result.fold(
+      (error) async {
         debugPrint("VaultAccessBloc failed while revoke user access: $error");
         emit(VaultAccessError(error.toString()));
       },
@@ -91,12 +91,12 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
         debugPrint("VaultAccessBloc - User access revoked successfully");
         //apres une révocation réussie, on liste les membres du vault
         final members = await listVaultMembersUseacse(vaultId: event.vaultId);
-        members.fold(
-          (error) {
+        await members.fold(
+          (error) async {
             debugPrint("VaultAccessBloc - Error listing vault members: $error");
             emit(VaultAccessError(error.toString()));
           },
-          (success) {
+          (success) async {
             debugPrint(
                 "VaultAccessBloc - Vault members loaded successfully : $members");
             emit(VaultMembersLoaded(success));
