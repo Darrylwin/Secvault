@@ -22,7 +22,12 @@ class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
     required List<int> rawData,
   }) async {
     final encryptedData = EncryptionHelper.encryptData(rawData);
-    final fileId = firestore.collection('vaults').doc(vaultId).collection('files').doc().id;
+    final fileId = firestore
+        .collection('vaults')
+        .doc(vaultId)
+        .collection('files')
+        .doc()
+        .id;
 
     await firestore
         .collection('vaults')
@@ -52,11 +57,12 @@ class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
   }
 
   @override
-  Future<List<SecuredFileModel>> listSecuredFiles({required String vaultId}) async {
+  Future<List<SecuredFileModel>> listSecuredFiles(
+      {required String vaultId}) async {
     final snapshot = await firestore
         .collection('vaults')
         .doc(vaultId)
-        .collection('files')
+        .collection('files').orderBy('uploadedAt', descending: true)
         .get();
 
     return snapshot.docs
@@ -79,6 +85,9 @@ class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
     if (!doc.exists) {
       throw SecuredFileFailure.notFound();
     }
+
+    doc.data()!["rawData"] =
+        EncryptionHelper.decryptData(doc.data()!["rawData"]);
 
     return SecuredFileModel.fromJson(doc.data()!);
   }
