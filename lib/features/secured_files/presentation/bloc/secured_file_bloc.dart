@@ -39,15 +39,28 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
       rawData: event.rawData,
     );
 
-    result.fold(
-      (error) {
+    await result.fold(
+      (error) async {
         debugPrint('SecuredFileBloc: Failed to upload file: ${error.message}');
         emit(SecuredFileError(error.message));
       },
-      (success) {
+      (success) async {
         debugPrint(
             "SecurdFileBloc uploaded files: ${event.fileName} to vault: ${event.vaultId}");
-        emit(SecuredFileSuccess());
+        // apres que le fichier at été uploadé on doit affcher la nouvelle lste des files
+        final result = await listSecuredFilesUsecase(vaultId: event.vaultId);
+        await result.fold(
+          (error) async {
+            debugPrint(
+                "SecuredFileBloc failed to list files: ${error.message}");
+            emit(SecuredFileError(error.message));
+          },
+          (files) async {
+            debugPrint(
+                "SecuredFileBloc listed files: ${files.length} files from vault: ${event.vaultId}");
+            emit(SecuredFileListSuccess(files));
+          },
+        );
       },
     );
   }
@@ -62,15 +75,28 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
       fileId: event.fileId,
     );
 
-    result.fold(
-      (error) {
+    await result.fold(
+      (error) async {
         debugPrint("SecuredFileBloc: Failed to delete file: ${error.message}");
         emit(SecuredFileError(error.message));
       },
-      (success) {
+      (success) async {
         debugPrint(
             "SecuredFileBloc deleted file ${event.fileId} from vault ${event.vaultId}");
-        emit(SecuredFileSuccess());
+        // apres que le fichier at été supprimé on doit affcher la nouvelle lste des files
+        final result = await listSecuredFilesUsecase(vaultId: event.vaultId);
+        await result.fold(
+          (error) async {
+            debugPrint(
+                "SecuredFileBloc failed to list files: ${error.message}");
+            emit(SecuredFileError(error.message));
+          },
+          (files) async {
+            debugPrint(
+                "SecuredFileBloc listed files: ${files.length} files from vault: ${event.vaultId}");
+            emit(SecuredFileListSuccess(files));
+          },
+        );
       },
     );
   }
