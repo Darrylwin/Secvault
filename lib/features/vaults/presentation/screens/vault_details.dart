@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_bloc.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_event.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_state.dart';
+import 'package:secvault/features/secured_files/presentation/widgets/confirm_file_delete_dialog.dart';
 import 'package:secvault/features/secured_files/presentation/widgets/file_card.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
@@ -32,6 +33,26 @@ class _VaultDetailsState extends State<VaultDetails> {
   void initState() {
     super.initState();
     context.read<SecuredFileBloc>().add(ListSecuredFilesEvent(widget.vaultId));
+  }
+
+  void Function()? _onDownloadPressed() {}
+
+  void Function()? _onDeletePressed(String fileId) {
+    showDialog(
+      context: context,
+      builder: (context) => ConfirmFileDeleteDialog(
+        onPressed: () {
+          final bloc = context.read<SecuredFileBloc>();
+          Navigator.of(context).pop();
+          bloc.add(
+            DeleteSecuredFileEvent(
+              vaultId: widget.vaultId,
+              fileId: fileId,
+            ),
+          );
+        },
+      ),
+    );
   }
 
   @override
@@ -290,6 +311,9 @@ class _VaultDetailsState extends State<VaultDetails> {
                               fileExtension: fileExtension,
                               fileName: file.fileName,
                               uploaAt: file.uploadedAt,
+                              onDeletePressed: () =>
+                                  _onDeletePressed(file.fileId),
+                              onDownloadPressed: _onDownloadPressed,
                             );
                           },
                         ),
