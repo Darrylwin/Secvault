@@ -36,15 +36,21 @@ class InviteUserDialog extends StatelessWidget {
             onPressed: () {
               final email = userEmailController.text.trim();
               if (email.isNotEmpty) {
-                context.read<VaultAccessBloc>().add(
-                      InviteUserToVaultEvent(
-                        vaultId: vaultId,
-                        userEmail: email,
-                        role: UserRole.reader,
-                      ),
-                    );
+                final bloc = context.read<VaultAccessBloc>();
+                bloc.add(
+                  InviteUserToVaultEvent(
+                    vaultId: vaultId,
+                    userEmail: email,
+                    role: UserRole.reader,
+                  ),
+                );
+                Navigator.of(context).pop();
+                Future.delayed(const Duration(milliseconds: 300), () {
+                  bloc.add(ListVaultMembersEvent(vaultId: vaultId));
+                });
+              } else {
+                Navigator.of(context).pop();
               }
-              Navigator.of(context).pop();
             },
             child: const Text('INVITE'),
           ),
