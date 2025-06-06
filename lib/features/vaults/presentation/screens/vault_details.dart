@@ -49,27 +49,14 @@ class _VaultDetailsState extends State<VaultDetails> {
       listener: (context, state) async {
         if (state is SecuredFileDownloadSuccess) {
           if (state.forDownloadOnly == true) {
-            //just download
-            String filePath;
-            if (Platform.isWindows) {
-              final tempPath = '${Platform.environment['TEMP']}\\secvault_temp';
-              filePath = '$tempPath\\${state.file.fileName}';
-            } else {
-              final tempDir = await getTemporaryDirectory();
-              filePath = '${tempDir.path}/${state.file.fileName}';
-            }
-            final decryptedData =
-            EncryptionHelper.decryptData(state.file.encryptedData);
-            final fileObj = File(filePath);
-            await fileObj.writeAsBytes(decryptedData);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('File sucessfully downloaded'),),);
-            //refresh files list
-            context.read<SecuredFileBloc>().add(
-              ListSecuredFilesEvent(widget.vaultId),);
-          }
-          else {
-            //open file
+            //just download the file without opening it
+            await _downloadFile(
+              context,
+              file: state.file,
+              vaultId: widget.vaultId,
+            );
+          } else {
+            //open file after download
             await _openDownloadedFile(state.file);
           }
         }
@@ -100,10 +87,32 @@ class _VaultDetailsState extends State<VaultDetails> {
         DownloadSecuredFileEvent(
             vaultId: widget.vaultId,
             fileId: fileId,
-            forDownloadOnly: false // false means we want to open the file after download
+            forDownloadOnly:
+            false // false means we want to open the file after download
         ),
       );
     }
+  }
+
+  Future<void> _downloadFile(BuildContext context, {
+    required SecuredFile file,
+    required String vaultId,
+  }) async {
+    String filePath;
+    if (Platform.isWindows) {
+      final tempPath = '${Platform.environment['TEMP']}\\secvault_temp';
+      filePath = '$tempPath\\${file.fileName}';
+    } else {
+      final tempDir = await getTemporaryDirectory();
+      filePath = '${tempDir.path}/${file.fileName}';
+    }
+    final decryptedData = EncryptionHelper.decryptData(file.encryptedData);
+    final fileObj = File(filePath);
+    await fileObj.writeAsBytes(decryptedData);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('File sucessfully downloaded')),
+    );
+    context.read<SecuredFileBloc>().add(ListSecuredFilesEvent(vaultId));
   }
 
   Future<void> _openDownloadedFileLocal(filePath) async {
@@ -215,13 +224,11 @@ class _VaultDetailsState extends State<VaultDetails> {
     required String fileName,
   }) async {
     // just download the file without open it
-    context.read<SecuredFileBloc>().add(
-        DownloadSecuredFileEvent(
-          vaultId: widget.vaultId,
-          fileId: fileId,
-          forDownloadOnly: true,
-        )
-    );
+    context.read<SecuredFileBloc>().add(DownloadSecuredFileEvent(
+      vaultId: widget.vaultId,
+      fileId: fileId,
+      forDownloadOnly: true,
+    ));
   }
 
   void Function()? _onDeletePressed(String fileId) {
@@ -517,8 +524,10 @@ class _VaultDetailsState extends State<VaultDetails> {
                                 onDeletePressed: () =>
                                     _onDeletePressed(file.fileId),
                                 onDownloadPressed: () =>
-                                    _onDownloadPressed(fileId: file.fileId,
-                                      fileName: file.fileName,),
+                                    _onDownloadPressed(
+                                      fileId: file.fileId,
+                                      fileName: file.fileName,
+                                    ),
                                 onFileCardTapped: () =>
                                     _onFileCardTapped(
                                       fileId: file.fileId,
