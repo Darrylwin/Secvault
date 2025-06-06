@@ -16,7 +16,6 @@ import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
 import 'package:secvault/features/vaults/presentation/widgets/confirm_vault_delete_dialog.dart';
 import 'package:secvault/features/vaults/presentation/widgets/my_action_button.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class VaultDetails extends StatefulWidget {
   const VaultDetails({
@@ -64,14 +63,14 @@ class _VaultDetailsState extends State<VaultDetails> {
         );
   }
 
-  Future<void> _openFileWithUrlLauncher(String filePath) async {
-    final uri = Uri.file(filePath);
-    debugPrint("Attempting to open with url_launcher: $uri");
-
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    } else {
-      throw Exception("Unable to open file with url_launcher");
+  Future<void> _openFileWithWindowsShell(String filePath) async {
+    try {
+      await Process.start('explorer', [filePath]);
+    } catch (e) {
+      debugPrint('Error while opening ile with explorer: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error while opening ile with explorer: $e')),
+      );
     }
   }
 
@@ -115,7 +114,7 @@ class _VaultDetailsState extends State<VaultDetails> {
       }
 
       if (Platform.isWindows) {
-        await _openFileWithUrlLauncher(filePath);
+        await _openFileWithWindowsShell(filePath);
       } else {
         final result = await OpenFile.open(filePath);
         debugPrint('Opening result: ${result.type} - ${result.message}');
