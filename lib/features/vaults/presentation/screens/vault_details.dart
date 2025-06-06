@@ -124,6 +124,11 @@ class _VaultDetailsState extends State<VaultDetails> {
           );
         }
       }
+      debugPrint("File opened successfully");
+      // Après l'ouverture du fichier
+      context
+          .read<SecuredFileBloc>()
+          .add(ListSecuredFilesEvent(widget.vaultId));
     } catch (e) {
       debugPrint("Error opening file: $e");
       ScaffoldMessenger.of(context).showSnackBar(
