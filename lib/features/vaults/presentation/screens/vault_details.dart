@@ -16,6 +16,7 @@ import 'package:secvault/features/vaults/presentation/bloc/vault_bloc.dart';
 import 'package:secvault/features/vaults/presentation/bloc/vault_event.dart';
 import 'package:secvault/features/vaults/presentation/widgets/confirm_vault_delete_dialog.dart';
 import 'package:secvault/features/vaults/presentation/widgets/my_action_button.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class VaultDetails extends StatefulWidget {
   const VaultDetails({
