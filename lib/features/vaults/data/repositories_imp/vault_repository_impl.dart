@@ -15,9 +15,9 @@ class VaultRepositoryImpl implements VaultRepository {
   const VaultRepositoryImpl(this._vaultRemoteDataSource);
 
   @override
-  Future<Either<VaultFailure, Vault>> createVault(String name) async {
+  Future<Either<VaultFailure, Vault>> createVault(String name, String userId) async {
     try {
-      final vaultModel = await _vaultRemoteDataSource.createVault(name);
+      final vaultModel = await _vaultRemoteDataSource.createVault(name, userId);
       return Right(vaultModel.toEntity());
     } on FirebaseException catch (error) {
       if (error.code == 'permission-denied') {
@@ -71,6 +71,33 @@ class VaultRepositoryImpl implements VaultRepository {
     } catch (error) {
       debugPrint(
           "VaultRepository Error fetching datas: $error"); //for debugging
+      return Left(VaultFailure.unknown(error));
+    }
+  }
+
+  @override
+  Future<Either<VaultFailure, List<Vault>>> getAccessibleVaults(String userId) async {
+    try {
+      final vaults = await _vaultRemoteDataSource.getAccessibleVaults(userId);
+      debugPrint("VaultRepository had fetched accessible vaults: $vaults"); //for debugging
+      return Right(vaults.map((vault) => vault.toEntity()).toList());
+    } on FirebaseException catch (error) {
+      if (error.code == 'permission-denied') {
+        debugPrint(
+            "VaultRepository Error fetching accessible vaults: ${error.message}"); //for debugging
+        return Left(VaultFailure.permissionDenied());
+      } else {
+        debugPrint(
+            "VaultRepository Error fetching accessible vaults: ${error.message}"); //for debugging
+        return Left(VaultFailure.unknown(error.message ?? ''));
+      }
+    } on SocketException {
+      debugPrint(
+          "VaultRepository Error fetching accessible vaults: SocketException"); //for debugging
+      return Left(VaultFailure.network());
+    } catch (error) {
+      debugPrint(
+          "VaultRepository Error fetching accessible vaults: $error"); //for debugging
       return Left(VaultFailure.unknown(error));
     }
   }

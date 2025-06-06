@@ -69,13 +69,15 @@ class VaultMemberCard extends StatelessWidget {
               ),
             ],
           ),
-          trailing: IconButton(
-            icon: Icon(
-              Icons.delete_outline,
-              color: Theme.of(context).colorScheme.error,
-            ),
-            onPressed: () => showConfirmRevokeUserDialog,
-          ),
+          trailing: role != UserRole.owner
+              ? IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                  onPressed: showConfirmRevokeUserDialog,
+                )
+              : null,
         ),
       );
 }

@@ -28,13 +28,14 @@ class ConfirmRevokeUserDialog extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () {
+              final bloc = context.read<VaultAccessBloc>();
               Navigator.of(context).pop();
-              context.read<VaultAccessBloc>().add(
-                    RevokeUserAccessEvent(
-                      vaultId: vaultId,
-                      userId: userId,
-                    ),
-                  );
+              bloc.add(
+                RevokeUserAccessEvent(
+                  vaultId: vaultId,
+                  userId: userId,
+                ),
+              );
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,

@@ -3,19 +3,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/features/vaults/domain/usecases/create_vault_usecase.dart';
 import 'package:secvault/features/vaults/domain/usecases/delete_vault_usecase.dart';
 import 'package:secvault/features/vaults/domain/usecases/get_all_vaults_usecase.dart';
+import 'package:secvault/features/vaults/domain/usecases/get_accessible_vaults_usecase.dart';
 
 import 'vault_event.dart';
 import 'vault_state.dart';
 
 class VaultBloc extends Bloc<VaultEvent, VaultState> {
+  final GetAccessibleVaultsUsecase getAccessibleVaults;
   final GetAllVaultsUsecase getAllVaults;
   final CreateVaultUsecase createVault;
   final DeleteVaultUsecase deleteVault;
+  final String currentUserId;
 
   VaultBloc({
     required this.deleteVault,
     required this.createVault,
     required this.getAllVaults,
+    required this.getAccessibleVaults,
+    required this.currentUserId,
   }) : super(VaultInitial()) {
     on<LoadVaults>(_onLoadVaults);
     on<CreateVault>(_onCreateVault);
@@ -24,7 +29,7 @@ class VaultBloc extends Bloc<VaultEvent, VaultState> {
 
   Future<void> _onLoadVaults(VaultEvent event, Emitter<VaultState> emit) async {
     emit(VaultLoading());
-    final result = await getAllVaults();
+    final result = await getAccessibleVaults(currentUserId);
     result.fold(
       (failure) {
         debugPrint('VaultBloc: Failed to load vaults');
@@ -42,7 +47,7 @@ class VaultBloc extends Bloc<VaultEvent, VaultState> {
     Emitter<VaultState> emit,
   ) async {
     emit(VaultLoading());
-    final result = await createVault(name: event.name);
+    final result = await createVault(name: event.name, ownerId: currentUserId);
     result.fold(
       (failure) => emit(VaultError(failure.message)),
       (success) => add(LoadVaults()),

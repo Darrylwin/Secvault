@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:secvault/features/access_control/domain/usecases/invite_user_to_vault_useacse.dart';
 import 'package:secvault/features/access_control/domain/usecases/list_vault_members_usecase.dart';
@@ -31,9 +32,27 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
       role: event.role,
     );
 
-    result.fold(
-      (error) => emit(VaultAccessError('$error')),
-      (success) => emit(VaultAccessSuccess("User successfully inited")),
+    await result.fold(
+      (error) async {
+        debugPrint("Error inviting user: $error");
+        emit(VaultAccessError('$error'));
+      },
+      (success) async {
+        debugPrint('VaultAccessBloc - User invited successfully');
+        //apres une invitation réussie, on liste les membres du vault
+        final members = await listVaultMembersUseacse(vaultId: event.vaultId);
+        await members.fold(
+          (error) async {
+            debugPrint("VaultAccessBloc - Error listing vault members: $error");
+            emit(VaultAccessError(error.toString()));
+          },
+          (success) async {
+            debugPrint(
+                "VaultAccessBloc - Vault members loaded successfully : $members");
+            emit(VaultMembersLoaded(success));
+          },
+        );
+      },
     );
   }
 
@@ -41,9 +60,16 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
       ListVaultMembersEvent event, Emitter<VaultAccessState> emit) async {
     emit(VaultAccessLoading());
     final members = await listVaultMembersUseacse(vaultId: event.vaultId);
-    members.fold(
-      (error) => emit(VaultAccessError(error.toString())),
-      (successs) => emit(VaultMembersLoaded(successs)),
+    await members.fold(
+      (error) async {
+        debugPrint("VaultAccessBloc - Error listing vault members: $error");
+        emit(VaultAccessError(error.toString()));
+      },
+      (success) async {
+        debugPrint(
+            "VaultAccessBloc - Vault members loaded successfully : $members");
+        emit(VaultMembersLoaded(success));
+      },
     );
   }
 
@@ -56,9 +82,27 @@ class VaultAccessBloc extends Bloc<VaultAccessEvent, VaultAccessState> {
       userId: event.userId,
     );
 
-    result.fold(
-      (error) => emit(VaultAccessError(error.toString())),
-      (success) => emit(VaultAccessSuccess("User access revoked successfully")),
+    await result.fold(
+      (error) async {
+        debugPrint("VaultAccessBloc failed while revoke user access: $error");
+        emit(VaultAccessError(error.toString()));
+      },
+      (success) async {
+        debugPrint("VaultAccessBloc - User access revoked successfully");
+        //apres une révocation réussie, on liste les membres du vault
+        final members = await listVaultMembersUseacse(vaultId: event.vaultId);
+        await members.fold(
+          (error) async {
+            debugPrint("VaultAccessBloc - Error listing vault members: $error");
+            emit(VaultAccessError(error.toString()));
+          },
+          (success) async {
+            debugPrint(
+                "VaultAccessBloc - Vault members loaded successfully : $members");
+            emit(VaultMembersLoaded(success));
+          },
+        );
+      },
     );
   }
 }

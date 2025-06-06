@@ -86,3 +86,37 @@ features/
             ├── invite_user_form.dart
             ├── member_list_item.dart
             └── role_selector_dropdown.dart
+
+=========== files ===========
+
+features/files/
+├── data/
+│   ├── datasources/
+│   │   └── files_remote_datasource.dart          # communication backend pour upload, list, delete
+│   ├── models/
+│   │   └── secret_file_model.dart               # modèle data = SecretFileModel
+│   └── repositories/
+│       └── files_repository_impl.dart           # implémente FilesRepository
+│
+├── domain/
+│   ├── entities/
+│   │   └── secret_file.dart                     # entité : SecretFile
+│   ├── repositories/
+│   │   └── files_repository.dart                # interface abstraite
+│   └── usecases/
+│       ├── upload_secret_file.dart              # upload avec chiffrement
+│       ├── download_secret_file.dart            # download + déchiffrement
+│       ├── delete_secret_file.dart              # suppression
+│       └── list_secret_files.dart               # liste des fichiers d’un coffre
+│
+└── presentation/
+    ├── bloc/
+    │   ├── secret_files_bloc.dart               # BLoC simple
+    │   ├── secret_files_event.dart
+    │   └── secret_files_state.dart
+    ├── screens/
+    │   ├── secret_file_list_page.dart           # affiche tous les fichiers du coffre
+    │   └── secret_file_upload_page.dart         # écran/modale pour upload
+    └── widgets/
+        ├── secret_file_card.dart                # carte individuelle pour fichier
+        └── secret_file_upload_button.dart       # bouton d’upload

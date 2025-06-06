@@ -22,15 +22,11 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
     required String userEmail,
     required UserRole role,
   }) async {
+/*
+    TODO: pour la methode inviteUserToVault il ne faudarait pas juste ajouter l'email comme ça. Il faudrait verifier que l'email existe dasn notre application d'abord.
+     Si oui on lui envoie un email via firebase et en cliquant sur le lien dasn cet email il aura accès
+*/
     try {
-      // Vérifier si l'utilisateur existe dans Firebase Auth
-      final userList = await auth.fetchSignInMethodsForEmail(userEmail);
-
-      if (userList.isEmpty) {
-        throw VaultAccessFailure(
-            'Aucun utilisateur n\'est inscrit avec cet email');
-      }
-
       // Vérifier si le coffre existe
       final vaultDoc = await firestore.collection('vaults').doc(vaultId).get();
       if (!vaultDoc.exists) {
@@ -126,7 +122,8 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
           final roleString = data['role'] as String;
           memberRole = UserRole.values.firstWhere(
             (role) => role.toString().split('.').last == roleString,
-            orElse: () => UserRole.reader, // Par défaut, attribuer reader si le rôle est inconnu
+            orElse: () => UserRole
+                .reader, // Par défaut, attribuer reader si le rôle est inconnu
           );
         } catch (e) {
           memberRole = UserRole.reader; // Valeur par défaut en cas d'erreur
@@ -152,10 +149,10 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
 
       return members;
     } catch (e) {
-      throw VaultAccessFailure('Erreur lors de la récupération des membres du coffre: ${e.toString()}');
+      throw VaultAccessFailure(
+          'Erreur lors de la récupération des membres du coffre: ${e.toString()}');
     }
   }
-
 
   @override
   Future<void> revokeUserAccess({
@@ -172,7 +169,8 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
       // Vérifier si l'utilisateur actuel est le propriétaire du coffre
       final currentUserId = auth.currentUser?.uid;
       if (currentUserId == null) {
-        throw VaultAccessFailure('Vous devez être connecté pour révoquer l\'accès');
+        throw VaultAccessFailure(
+            'Vous devez être connecté pour révoquer l\'accès');
       }
 
       // Obtenir la liste des membres pour vérifier les rôles
@@ -202,12 +200,14 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
 
       // Seul un propriétaire peut révoquer l'accès
       if (!isCurrentUserOwner) {
-        throw VaultAccessFailure('Vous devez être propriétaire du coffre pour révoquer l\'accès');
+        throw VaultAccessFailure(
+            'Vous devez être propriétaire du coffre pour révoquer l\'accès');
       }
 
       // Un propriétaire ne peut pas révoquer l'accès d'un autre propriétaire
       if (isTargetUserOwner) {
-        throw VaultAccessFailure('Vous ne pouvez pas révoquer l\'accès d\'un propriétaire du coffre');
+        throw VaultAccessFailure(
+            'Vous ne pouvez pas révoquer l\'accès d\'un propriétaire du coffre');
       }
 
       // Chercher le document du membre à supprimer
@@ -219,7 +219,8 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
           .get();
 
       if (memberQuery.docs.isEmpty) {
-        throw VaultAccessFailure('L\'utilisateur spécifié n\'a pas accès à ce coffre');
+        throw VaultAccessFailure(
+            'L\'utilisateur spécifié n\'a pas accès à ce coffre');
       }
 
       // Supprimer le membre de la liste des membres du coffre
@@ -241,9 +242,9 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
           vaultDoc.data()?['name'] ?? 'Vault',
         );
       }
-
     } catch (e) {
-      throw VaultAccessFailure('Erreur lors de la révocation de l\'accès: ${e.toString()}');
+      throw VaultAccessFailure(
+          'Erreur lors de la révocation de l\'accès: ${e.toString()}');
     }
   }
 
@@ -264,7 +265,8 @@ class VaultAccessRemoteDatasourceImpl implements VaultAccessRemoteDatasource {
       });
     } catch (e) {
       // Log l'erreur mais ne pas faire échouer le processus de révocation
-      debugPrint('Erreur lors de l\'envoi de la notification de révocation: ${e.toString()}');
+      debugPrint(
+          'Erreur lors de l\'envoi de la notification de révocation: ${e.toString()}');
     }
   }
 }

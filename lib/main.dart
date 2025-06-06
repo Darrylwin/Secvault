@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -16,6 +17,13 @@ import 'package:secvault/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:secvault/features/auth/presentation/bloc/auth_event.dart';
 import 'package:secvault/features/auth/presentation/bloc/auth_state.dart';
 import 'package:secvault/features/auth/presentation/screens/login_page.dart';
+import 'package:secvault/features/secured_files/data/datasources/remote/secured_file_remote_datasource_impl.dart';
+import 'package:secvault/features/secured_files/data/repositories_impl/secured_file_repository_impl.dart';
+import 'package:secvault/features/secured_files/domain/usecases/delete_secured_file_usecase.dart';
+import 'package:secvault/features/secured_files/domain/usecases/download_secured_file_usecase.dart';
+import 'package:secvault/features/secured_files/domain/usecases/list_secured_files_usecase.dart';
+import 'package:secvault/features/secured_files/domain/usecases/upload_secured_file_usecase.dart';
+import 'package:secvault/features/secured_files/presentation/bloc/secured_file_bloc.dart';
 import 'package:secvault/features/vaults/data/datasources/vault_remote_datasource_impl.dart';
 import 'package:secvault/features/vaults/domain/usecases/create_vault_usecase.dart';
 import 'package:secvault/features/vaults/domain/usecases/delete_vault_usecase.dart';
@@ -27,15 +35,18 @@ import 'features/access_control/presentation/bloc/vault_access_bloc.dart';
 import 'features/auth/data/datasources/auth_remote_datasource_impl.dart';
 import 'features/auth/domain/usecases/login.dart';
 import 'features/vaults/data/repositories_imp/vault_repository_impl.dart';
+import 'features/vaults/domain/usecases/get_accessible_vaults_usecase.dart';
 import 'features/vaults/presentation/screens/home_page.dart';
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // Initialize Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final FirebaseAuth firebaseAuthInstance = FirebaseAuth.instance;
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+  final FirebaseStorage storageInstance = FirebaseStorage.instance;
 
   /* auth feature */
   final authRemoteDatasource = AuthRemoteDatasourceImpl(firebaseAuthInstance);
@@ -47,13 +58,16 @@ void main() async {
   final getCurrentUser = GetCurrentUser(authRepository);
 
   /* vault feature */
-  final vaultRemoteDatasource =
-      VaultRemoteDataSourceImpl(firestore: firestoreInstance);
+  final vaultRemoteDatasource = VaultRemoteDataSourceImpl(
+    firestore: firestoreInstance,
+    auth: firebaseAuthInstance,
+  );
   final vaultRepository = VaultRepositoryImpl(vaultRemoteDatasource);
 
   final createVault = CreateVaultUsecase(vaultRepository);
   final deleteVault = DeleteVaultUsecase(vaultRepository);
   final getAllVaults = GetAllVaultsUsecase(vaultRepository);
+  final getAccessibleVaults = GetAccessibleVaultsUsecase(vaultRepository);
 
   /*access controll feature*/
   final vaultAccessRemoteDatasource = VaultAccessRemoteDatasourceImpl(
@@ -66,6 +80,19 @@ void main() async {
   final inviteUserToVault = InviteUserToVaultUseacse(vaultAccessRepository);
   final listVaultMembers = ListVaultMembersUsecase(vaultAccessRepository);
   final revokeUserAccess = RevokeUserAccessUsecase(vaultAccessRepository);
+
+  /*secured files*/
+  final securedFileRemoteDatasource = SecuredFileRemoteDatasourceImpl(
+    firestore: firestoreInstance,
+    storage: storageInstance,
+  );
+  final securedFileRepository =
+      SecuredFileRepositoryImpl(securedFileRemoteDatasource);
+
+  final deleteFile = DeleteSecuredFileUsecase(securedFileRepository);
+  final downloadFile = DownloadSecuredFileUsecase(securedFileRepository);
+  final listFiles = ListSecuredFilesUsecase(securedFileRepository);
+  final uploadFile = UploadSecuredFileUsecase(securedFileRepository);
 
   runApp(
     MultiBlocProvider(
@@ -83,6 +110,8 @@ void main() async {
             deleteVault: deleteVault,
             createVault: createVault,
             getAllVaults: getAllVaults,
+            getAccessibleVaults: getAccessibleVaults,
+            currentUserId: firebaseAuthInstance.currentUser?.uid ?? '',
           ),
         ),
         BlocProvider(
@@ -90,6 +119,14 @@ void main() async {
             inviteUserToVaultUseacse: inviteUserToVault,
             listVaultMembersUseacse: listVaultMembers,
             revokeUserAccessUseacse: revokeUserAccess,
+          ),
+        ),
+        BlocProvider(
+          create: (context) => SecuredFileBloc(
+            deleteSecuredFileUsecase: deleteFile,
+            downloadSecuredFileUsecase: downloadFile,
+            listSecuredFilesUsecase: listFiles,
+            uploadSecuredFileUsecase: uploadFile,
           ),
         ),
       ],
