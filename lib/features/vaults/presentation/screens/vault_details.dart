@@ -57,86 +57,81 @@ class _VaultDetailsState extends State<VaultDetails> {
 
   void _onFileCardTapped(String fileId) {
     context.read<SecuredFileBloc>().add(
-      DownloadSecuredFileEvent(
-        vaultId: widget.vaultId,
-        fileId: fileId,
-      ),
-    );
+          DownloadSecuredFileEvent(
+            vaultId: widget.vaultId,
+            fileId: fileId,
+          ),
+        );
   }
 
   Future<void> _openFileWithUrlLauncher(String filePath) async {
     final uri = Uri.file(filePath);
-    debugPrint("Tentative d'ouverture avec url_launcher: $uri");
+    debugPrint("Attempting to open with url_launcher: $uri");
 
     if (await canLaunchUrl(uri)) {
       await launchUrl(uri);
     } else {
-      throw Exception("Impossible d'ouvrir le fichier avec url_launcher");
+      throw Exception("Unable to open file with url_launcher");
     }
   }
 
   Future<void> _openDownloadedFile(SecuredFile file) async {
-    debugPrint('Début de l\'ouverture du fichier');
+    debugPrint('Starting file opening process');
     try {
-      //verification des données d'entrée
-      if (file == null) {
-        debugPrint("Error: file is null");
-        return;
+      debugPrint(
+          'File to open: ${file.fileName}, encrypted size: ${file.encryptedData.length}');
+
+      String filePath;
+
+      // Different approach based on platform
+      if (Platform.isWindows) {
+        // On Windows, use the user's TEMP folder directly
+        final tempPath = '${Platform.environment['TEMP']}\\secvault_temp';
+        final directory = Directory(tempPath);
+        if (!await directory.exists()) {
+          await directory.create(recursive: true);
+        }
+        filePath = '$tempPath\\${file.fileName}';
+      } else {
+        // On other platforms, use path_provider
+        final tempDir = await getTemporaryDirectory();
+        filePath = '${tempDir.path}/${file.fileName}';
       }
 
-      debugPrint(
-          'Fichier à ouvrir: ${file.fileName} , taille encryptée: ${file
-              .encryptedData.length}');
+      debugPrint("Attempting to open file. Path: $filePath");
 
-      //dossiers temporaires
-      final tempDir = await getTemporaryDirectory();
-      final filePath = '${tempDir.path}/${file.fileName}';
-
-      debugPrint("U tried to open file. Path : $filePath");
-
-      //verifier que le déryptage fonctionne
+      // Decrypt and write data
       final decryptedData = EncryptionHelper.decryptData(file.encryptedData);
-      debugPrint("Decrypted data length: ${decryptedData.length} octets");
+      debugPrint("Decrypted data size: ${decryptedData.length} bytes");
 
-      //Ecrre le fichier
       final fileObj = File(filePath);
       await fileObj.writeAsBytes(decryptedData);
 
-      //Verifier que le ficher exste bien
       if (await fileObj.exists()) {
         debugPrint(
-            'File creates successfully (length: ${await fileObj
-                .length()} octets) and exists at: $filePath');
+            'File created successfully (size: ${await fileObj.length()} bytes)');
       } else {
-        debugPrint('Erreur: The file have not been created');
+        debugPrint('Error: File was not created');
         return;
       }
 
-      //ouvrir le fichier avec l'application associée
-      debugPrint("Trying to open file with OpenFile.open()");
+      // Open the file
       if (Platform.isWindows) {
         await _openFileWithUrlLauncher(filePath);
       } else {
         final result = await OpenFile.open(filePath);
-        debugPrint(
-            'Result of opening : ${result.type.toString()} - ${result
-                .message}');
+        debugPrint('Opening result: ${result.type} - ${result.message}');
 
         if (result.type != ResultType.done) {
-          debugPrint("Ereur lors de l'ouverture fu fichier: ${result.message}");
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                "Ereur lors de l'ouverture fu fichier: ${result.message}",
-              ),
-            ),
+            SnackBar(content: Text("Error opening file: ${result.message}")),
           );
         }
       }
     } catch (e) {
-      debugPrint("Ereur lors de l'ouverture du fichier: $e");
+      debugPrint("Error opening file: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Ereur lors de l'ouverture du fichier: $e")),
+        SnackBar(content: Text("Error opening file: $e")),
       );
     }
   }
@@ -146,19 +141,18 @@ class _VaultDetailsState extends State<VaultDetails> {
   void Function()? _onDeletePressed(String fileId) {
     showDialog(
       context: context,
-      builder: (context) =>
-          ConfirmFileDeleteDialog(
-            onPressed: () {
-              final bloc = context.read<SecuredFileBloc>();
-              Navigator.of(context).pop();
-              bloc.add(
-                DeleteSecuredFileEvent(
-                  vaultId: widget.vaultId,
-                  fileId: fileId,
-                ),
-              );
-            },
-          ),
+      builder: (context) => ConfirmFileDeleteDialog(
+        onPressed: () {
+          final bloc = context.read<SecuredFileBloc>();
+          Navigator.of(context).pop();
+          bloc.add(
+            DeleteSecuredFileEvent(
+              vaultId: widget.vaultId,
+              fileId: fileId,
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -167,14 +161,13 @@ class _VaultDetailsState extends State<VaultDetails> {
     void Function()? onDeleteVaultTapped() {
       showDialog(
         context: context,
-        builder: (context) =>
-            ConfirmVaultDeleteDialog(
-              onPressed: () {
-                context.read<VaultBloc>().add(DeleteVault(widget.vaultId));
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-            ),
+        builder: (context) => ConfirmVaultDeleteDialog(
+          onPressed: () {
+            context.read<VaultBloc>().add(DeleteVault(widget.vaultId));
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+          },
+        ),
       );
     }
 
@@ -188,12 +181,12 @@ class _VaultDetailsState extends State<VaultDetails> {
           final fileBytes = await result.readAsBytes();
 
           context.read<SecuredFileBloc>().add(
-            UploadSecuredFileEvent(
-              vaultId: widget.vaultId,
-              fileName: fileName,
-              rawData: fileBytes,
-            ),
-          );
+                UploadSecuredFileEvent(
+                  vaultId: widget.vaultId,
+                  fileName: fileName,
+                  rawData: fileBytes,
+                ),
+              );
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -267,8 +260,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                                     ),
                                     const SizedBox(width: 5),
                                     Text(
-                                      'Created on ${DateFormat('MMM dd, yyyy')
-                                          .format(widget.createdAt)}',
+                                      'Created on ${DateFormat('MMM dd, yyyy').format(widget.createdAt)}',
                                       style: TextStyle(
                                         fontSize: 14,
                                         color: Colors.grey[600],
@@ -281,8 +273,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                             Container(
                               padding: const EdgeInsets.all(10),
                               decoration: BoxDecoration(
-                                color: Theme
-                                    .of(context)
+                                color: Theme.of(context)
                                     .colorScheme
                                     .primary
                                     .withOpacity(0.1),
@@ -290,10 +281,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                               ),
                               child: Icon(
                                 Icons.folder,
-                                color: Theme
-                                    .of(context)
-                                    .colorScheme
-                                    .primary,
+                                color: Theme.of(context).colorScheme.primary,
                                 size: 28,
                               ),
                             ),
@@ -314,7 +302,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                     MyActionButton(
                       icon: Icons.upload_file,
                       label: 'Upload',
-                      onTap: () {},
+                      onTap: uploadFile,
                     ),
                     MyActionButton(
                       icon: Icons.people,
@@ -398,10 +386,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                                 ),
                                 CircleAvatar(
                                   backgroundColor:
-                                  Theme
-                                      .of(context)
-                                      .colorScheme
-                                      .primary,
+                                      Theme.of(context).colorScheme.primary,
                                   radius: 12,
                                   child: Text(
                                     '${files.length}',
@@ -425,10 +410,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                             itemBuilder: (context, index) {
                               final file = files[index];
                               final String fileExtension =
-                              file.fileName
-                                  .split('.')
-                                  .last
-                                  .toLowerCase();
+                                  file.fileName.split('.').last.toLowerCase();
                               return FileCard(
                                 fileExtension: fileExtension,
                                 fileName: file.fileName,
