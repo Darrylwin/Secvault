@@ -56,11 +56,11 @@ class _VaultDetailsState extends State<VaultDetails> {
 
   void _onFileCardTapped(String fileId) {
     context.read<SecuredFileBloc>().add(
-          DownloadSecuredFileEvent(
-            vaultId: widget.vaultId,
-            fileId: fileId,
-          ),
-        );
+      DownloadSecuredFileEvent(
+        vaultId: widget.vaultId,
+        fileId: fileId,
+      ),
+    );
   }
 
   Future<void> _openDownloadedFile(SecuredFile file) async {
@@ -69,22 +69,43 @@ class _VaultDetailsState extends State<VaultDetails> {
       final tempDir = await getTemporaryDirectory();
       final filePath = '${tempDir.path}/${file.fileName}';
 
-      //décrypter les données
+      debugPrint("U tried to open file. Path : $filePath");
+
+      //verifier que le déryptage fonctionne
       final decryptedData = EncryptionHelper.decryptData(file.encryptedData);
-      await File(filePath).writeAsBytes(decryptedData);
+      debugPrint("Decrypted data length: ${decryptedData.length} octets");
 
-      //ouvrir le fichier avec l'application associée
-      final result = await OpenFile.open(filePath);
+      //Ecrre le fichier
+      final fileObj = File(filePath);
+      await fileObj.writeAsBytes(decryptedData);
 
-      if (result.type != ResultType.done) {
-        debugPrint("Ereur lors de l'ouverture fu fichier: ${result.message}");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+      //Verifier que le ficher exste bien
+      if (await fileObj.exists()) {
+        debugPrint(
+            'File creates successfully (length: ${await fileObj
+                .length()} octets) and exists at: $filePath');
+      } else {
+        debugPrint('Erreur: The file have not been created');
+            return;
+        }
+
+            //ouvrir le fichier avec l'application associée
+            debugPrint("Trying to open file with OpenFile.open()");
+        final result = await OpenFile.open(filePath);
+        debugPrint('Result of opening : ${result.type.toString()} - ${result
+            .message}');
+
+        if (result.type != ResultType.done) {
+          debugPrint("Ereur lors de l'ouverture fu fichier: ${result.message}");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
               content: Text(
-                  "Ereur lors de l'ouverture fu fichier: ${result.message}")),
-        );
-      }
-    } catch (e) {
+                "Ereur lors de l'ouverture fu fichier: ${result.message}",
+              ),
+            ),
+          );
+        }
+      } catch (e) {
       debugPrint("Ereur lors de l'ouverture du fichier: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Ereur lors de l'ouverture du fichier: $e")),
@@ -97,18 +118,19 @@ class _VaultDetailsState extends State<VaultDetails> {
   void Function()? _onDeletePressed(String fileId) {
     showDialog(
       context: context,
-      builder: (context) => ConfirmFileDeleteDialog(
-        onPressed: () {
-          final bloc = context.read<SecuredFileBloc>();
-          Navigator.of(context).pop();
-          bloc.add(
-            DeleteSecuredFileEvent(
-              vaultId: widget.vaultId,
-              fileId: fileId,
-            ),
-          );
-        },
-      ),
+      builder: (context) =>
+          ConfirmFileDeleteDialog(
+            onPressed: () {
+              final bloc = context.read<SecuredFileBloc>();
+              Navigator.of(context).pop();
+              bloc.add(
+                DeleteSecuredFileEvent(
+                  vaultId: widget.vaultId,
+                  fileId: fileId,
+                ),
+              );
+            },
+          ),
     );
   }
 
@@ -117,13 +139,14 @@ class _VaultDetailsState extends State<VaultDetails> {
     void Function()? onDeleteVaultTapped() {
       showDialog(
         context: context,
-        builder: (context) => ConfirmVaultDeleteDialog(
-          onPressed: () {
-            context.read<VaultBloc>().add(DeleteVault(widget.vaultId));
-            Navigator.of(context).pop();
-            Navigator.of(context).pop();
-          },
-        ),
+        builder: (context) =>
+            ConfirmVaultDeleteDialog(
+              onPressed: () {
+                context.read<VaultBloc>().add(DeleteVault(widget.vaultId));
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
       );
     }
 
@@ -137,12 +160,12 @@ class _VaultDetailsState extends State<VaultDetails> {
           final fileBytes = await result.readAsBytes();
 
           context.read<SecuredFileBloc>().add(
-                UploadSecuredFileEvent(
-                  vaultId: widget.vaultId,
-                  fileName: fileName,
-                  rawData: fileBytes,
-                ),
-              );
+            UploadSecuredFileEvent(
+              vaultId: widget.vaultId,
+              fileName: fileName,
+              rawData: fileBytes,
+            ),
+          );
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -213,7 +236,8 @@ class _VaultDetailsState extends State<VaultDetails> {
                                   ),
                                   const SizedBox(width: 5),
                                   Text(
-                                    'Created on ${DateFormat('MMM dd, yyyy').format(widget.createdAt)}',
+                                    'Created on ${DateFormat('MMM dd, yyyy')
+                                        .format(widget.createdAt)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       color: Colors.grey[600],
@@ -226,7 +250,8 @@ class _VaultDetailsState extends State<VaultDetails> {
                           Container(
                             padding: const EdgeInsets.all(10),
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
+                              color: Theme
+                                  .of(context)
                                   .colorScheme
                                   .primary
                                   .withOpacity(0.1),
@@ -234,7 +259,10 @@ class _VaultDetailsState extends State<VaultDetails> {
                             ),
                             child: Icon(
                               Icons.folder,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: Theme
+                                  .of(context)
+                                  .colorScheme
+                                  .primary,
                               size: 28,
                             ),
                           ),
@@ -339,7 +367,10 @@ class _VaultDetailsState extends State<VaultDetails> {
                               ),
                               CircleAvatar(
                                 backgroundColor:
-                                    Theme.of(context).colorScheme.primary,
+                                Theme
+                                    .of(context)
+                                    .colorScheme
+                                    .primary,
                                 radius: 12,
                                 child: Text(
                                   '${files.length}',
@@ -363,7 +394,10 @@ class _VaultDetailsState extends State<VaultDetails> {
                           itemBuilder: (context, index) {
                             final file = files[index];
                             final String fileExtension =
-                                file.fileName.split('.').last.toLowerCase();
+                            file.fileName
+                                .split('.')
+                                .last
+                                .toLowerCase();
                             return FileCard(
                               fileExtension: fileExtension,
                               fileName: file.fileName,
