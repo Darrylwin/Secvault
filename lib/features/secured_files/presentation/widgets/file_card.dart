@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class FileCard extends StatelessWidget {
   const FileCard({
     super.key,
     required this.fileExtension,
     required this.fileName,
-    required this.uploaAt,
+    required this.uploadedAt,
     required this.onDownloadPressed,
     required this.onDeletePressed,
     required this.onFileCardTapped,
@@ -13,7 +14,7 @@ class FileCard extends StatelessWidget {
 
   final String fileExtension;
   final String fileName;
-  final DateTime uploaAt;
+  final DateTime uploadedAt;
   final VoidCallback onDownloadPressed;
   final VoidCallback onDeletePressed;
   final VoidCallback onFileCardTapped;
@@ -60,7 +61,7 @@ class FileCard extends StatelessWidget {
             subtitle: Padding(
               padding: const EdgeInsets.only(top: 4),
               child: Text(
-                'Uploaded: $uploaAt}',
+                'Uploaded on ${DateFormat('MMM dd, yyyy').format(uploadedAt)}',
                 style: TextStyle(
                   color: Colors.grey[600],
                   fontSize: 12,

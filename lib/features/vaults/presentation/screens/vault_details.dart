@@ -367,7 +367,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                             return FileCard(
                               fileExtension: fileExtension,
                               fileName: file.fileName,
-                              uploaAt: file.uploadedAt,
+                              uploadedAt: file.uploadedAt,
                               onDeletePressed: () =>
                                   _onDeletePressed(file.fileId),
                               onDownloadPressed: _onDownloadPressed,
