@@ -31,9 +31,11 @@ class ListSecuredFilesEvent extends SecuredFileEvent {
 class DownloadSecuredFileEvent extends SecuredFileEvent {
   final String vaultId;
   final String fileId;
+  final bool forDownloadOnly;
 
   DownloadSecuredFileEvent({
     required this.vaultId,
     required this.fileId,
+    required this.forDownloadOnly,
   });
 }

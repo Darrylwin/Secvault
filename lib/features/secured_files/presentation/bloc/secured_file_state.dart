@@ -14,8 +14,12 @@ class SecuredFileListSuccess extends SecuredFileState {
 
 class SecuredFileDownloadSuccess extends SecuredFileState {
   final SecuredFile file;
+  final bool forDownloadOnly;
 
-  SecuredFileDownloadSuccess(this.file);
+  SecuredFileDownloadSuccess({
+    required this.file,
+    required this.forDownloadOnly,
+  });
 }
 
 class SecuredFileSuccess extends SecuredFileState {}

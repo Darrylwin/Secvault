@@ -135,7 +135,10 @@ class SecuredFileBloc extends Bloc<SecuredFileEvent, SecuredFileState> {
       (file) {
         debugPrint(
             "SecuredFileBloc downloaded file: ${file.fileName} from vault: ${event.vaultId}");
-        emit(SecuredFileDownloadSuccess(file));
+        emit(SecuredFileDownloadSuccess(
+          file: file,
+          forDownloadOnly: true,
+        ));
       },
     );
   }
