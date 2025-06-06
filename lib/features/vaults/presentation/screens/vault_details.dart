@@ -1,7 +1,13 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:cross_file_picker/cross_file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:secvault/features/secured_files/data/models/secured_file_model.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_bloc.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_event.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_state.dart';
@@ -29,10 +35,61 @@ class VaultDetails extends StatefulWidget {
 }
 
 class _VaultDetailsState extends State<VaultDetails> {
+
   @override
   void initState() {
     super.initState();
     context.read<SecuredFileBloc>().add(ListSecuredFilesEvent(widget.vaultId));
+    _setupBlocListener();
+  }
+
+  void _setupBlocListener() {
+    _blocListener = BlocListener<SecuredFileBloc, SecuredFileState>(
+      listenWhen: (previous, current) => current is SecuredFileDownloadSuccess,
+      listener: (context, state) async {
+        if (state is SecuredFileDownloadSuccess) {
+          await _openDownloadedFile(state.file);
+        }
+      },
+    );
+  }
+
+  void _onFileCardTapped(String fileId) {
+    context.read<SecuredFileBloc>().add(
+      DownloadSecuredFileEvent(
+        vaultId: widget.vaultId,
+        fileId: fileId,
+      ),
+    );
+  }
+
+  Future<void> _openDownloadedFile(SecuredFileModel file) async {
+    try {
+      //dossiers temporaires
+      final tempDir = await getTemporaryDirectory();
+      final filePath = '${tempDir.path}/${file.fileName}';
+
+      //Ecrire les données dans un fichier temporaire
+      final decodedData = base64Decode(file.encryptedData);
+      await File(filePath).writeAsBytes(decodedData);
+
+      //ouvrir le fichier avec l'application associée
+      final result = await OpenFile.open(filePath);
+
+      if (result.type != ResultType.done) {
+        debugPrint("Ereur lors de l'ouverture fu fichier: ${result.message}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  "Ereur lors de l'ouverture fu fichier: ${result.message}")),
+        );
+      }
+    } catch (e) {
+      debugPrint("Ereur lors de l'ouverture du fichier: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Ereur lors de l'ouverture du fichier: $e")),
+      );
+    }
   }
 
   void Function()? _onDownloadPressed() {}
@@ -314,6 +371,8 @@ class _VaultDetailsState extends State<VaultDetails> {
                               onDeletePressed: () =>
                                   _onDeletePressed(file.fileId),
                               onDownloadPressed: _onDownloadPressed,
+                              onFileCardTap: () =>
+                                  _onFileCardTapped(file.fileId),
                             );
                           },
                         ),
