@@ -54,8 +54,10 @@ class _VaultDetailsState extends State<VaultDetails> {
     );
   }
 
-  void _onFileCardTapped(
-      {required String fileId, required String fileName}) async {
+  void _onFileCardTapped({
+    required String fileId,
+    required String fileName,
+  }) async {
     String filePath;
     if (Platform.isWindows) {
       final tempPath = '${Platform.environment['TEMP']}\\secvault_temp';
@@ -80,7 +82,7 @@ class _VaultDetailsState extends State<VaultDetails> {
     }
   }
 
-  _openDownloadedFileLocal(filePath) async {
+  Future<void> _openDownloadedFileLocal(filePath) async {
     try {
       if (Platform.isWindows) {
         await _openFileWithWindowsShell(filePath);
@@ -95,6 +97,11 @@ class _VaultDetailsState extends State<VaultDetails> {
           );
         }
       }
+      debugPrint("File opened successfully");
+      // Après l'ouverture du fichier
+      context
+          .read<SecuredFileBloc>()
+          .add(ListSecuredFilesEvent(widget.vaultId));
     } catch (e) {
       debugPrint("Error opening file locally: $e");
       ScaffoldMessenger.of(context).showSnackBar(
