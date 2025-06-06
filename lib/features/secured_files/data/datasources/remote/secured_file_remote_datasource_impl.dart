@@ -86,9 +86,6 @@ class SecuredFileRemoteDatasourceImpl implements SecuredFileRemoteDatasource {
       throw SecuredFileFailure.notFound();
     }
 
-    doc.data()!["rawData"] =
-        EncryptionHelper.decryptData(doc.data()!["rawData"]);
-
     return SecuredFileModel.fromJson(doc.data()!);
   }
 }
