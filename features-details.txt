@@ -120,3 +120,41 @@ features/files/
     └── widgets/
         ├── secret_file_card.dart                # carte individuelle pour fichier
         └── secret_file_upload_button.dart       # bouton d’upload
+
+=========== audit ===========
+
+features/
+└── audit/
+    ├── data/
+    │   ├── datasources/
+    │   │   └── audit_remote_datasource.dart
+    │   │   └── audit_remote_datasource_impl.dart
+    │   ├── models/
+    │   │   └── audit_log_model.dart
+    │   └── repositories/
+    │       └── audit_repository_impl.dart
+    │
+    ├── domain/
+    │   ├── entities/
+    │   │   └── audit_log.dart
+    │   ├── repositories/
+    │   │   └── audit_repository.dart
+    │   ├── usecases/
+    │   │   ├── get_audit_logs_for_vault.dart
+    │   │   └── get_filtered_audit_logs.dart
+    │   └── errors/
+    │       └── audit_failure.dart
+    │
+    ├── presentation/
+    │   ├── bloc/
+    │   │   ├── audit_bloc.dart
+    │   │   ├── audit_event.dart
+    │   │   └── audit_state.dart
+    │   ├── screens/
+    │   │   └── audit_log_screen.dart
+    │   └── widgets/
+    │       ├── audit_log_list.dart
+    │       └── audit_log_tile.dart
+    │
+    └── utils/
+        └── audit_action_labels.dart (optionnel, pour mapper les actions à des labels lisibles)
