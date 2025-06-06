@@ -6,7 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:secvault/core/helpers/encryption_helper.dart';
-import 'package:secvault/features/secured_files/data/models/secured_file_model.dart';
+import 'package:secvault/features/secured_files/domain/entities/secured_file.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_bloc.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_event.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_state.dart';
@@ -63,7 +63,7 @@ class _VaultDetailsState extends State<VaultDetails> {
         );
   }
 
-  Future<void> _openDownloadedFile(SecuredFileModel file) async {
+  Future<void> _openDownloadedFile(SecuredFile file) async {
     try {
       //dossiers temporaires
       final tempDir = await getTemporaryDirectory();
