@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:secvault/features/audit/data/datasorces/audit_remote_datasource.dart';
+import 'package:secvault/features/audit/data/datasources/audit_remote_datasource.dart';
 import 'package:secvault/features/audit/data/models/audit_log_model.dart';
 import 'package:secvault/features/audit/domain/entities/audit_log_filter.dart';
 

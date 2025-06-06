@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:secvault/features/audit/data/datasorces/audit_remote_datasource.dart';
+import 'package:secvault/features/audit/data/datasources/audit_remote_datasource.dart';
 import 'package:secvault/features/audit/domain/entities/audit_log.dart';
 import 'package:secvault/features/audit/domain/entities/audit_log_filter.dart';
 import 'package:secvault/features/audit/domain/errors/audit_failure.dart';
