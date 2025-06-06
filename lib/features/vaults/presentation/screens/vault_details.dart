@@ -54,13 +54,53 @@ class _VaultDetailsState extends State<VaultDetails> {
     );
   }
 
-  void _onFileCardTapped(String fileId) {
-    context.read<SecuredFileBloc>().add(
-          DownloadSecuredFileEvent(
-            vaultId: widget.vaultId,
-            fileId: fileId,
-          ),
-        );
+  void _onFileCardTapped(
+      {required String fileId, required String fileName}) async {
+    String filePath;
+    if (Platform.isWindows) {
+      final tempPath = '${Platform.environment['TEMP']}\\secvault_temp';
+      filePath = '$tempPath\\$fileName';
+    } else {
+      final tempDir = await getTemporaryDirectory();
+      filePath = '${tempDir.path}/$fileName';
+    }
+
+    final fileObj = File(filePath);
+    if (await fileObj.exists()) {
+      //open file directly in local
+      await _openDownloadedFileLocal(filePath);
+    } else {
+      //download and open
+      context.read<SecuredFileBloc>().add(
+            DownloadSecuredFileEvent(
+              vaultId: widget.vaultId,
+              fileId: fileId,
+            ),
+          );
+    }
+  }
+
+  _openDownloadedFileLocal(filePath) async {
+    try {
+      if (Platform.isWindows) {
+        await _openFileWithWindowsShell(filePath);
+      } else {
+        final result = await OpenFile.open(filePath);
+        debugPrint('Opening result: ${result.type} - ${result.message}');
+        if (result.type != ResultType.done) {
+          debugPrint("Error opening file locally: ${result.message}");
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text("Error opening file locally: ${result.message}")),
+          );
+        }
+      }
+    } catch (e) {
+      debugPrint("Error opening file locally: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error opening file locally: $e")),
+      );
+    }
   }
 
   Future<void> _openFileWithWindowsShell(String filePath) async {
@@ -419,8 +459,10 @@ class _VaultDetailsState extends State<VaultDetails> {
                                 onDeletePressed: () =>
                                     _onDeletePressed(file.fileId),
                                 onDownloadPressed: _onDownloadPressed,
-                                onFileCardTapped: () =>
-                                    _onFileCardTapped(file.fileId),
+                                onFileCardTapped: () => _onFileCardTapped(
+                                  fileId: file.fileId,
+                                  fileName: file.fileName,
+                                ),
                               );
                             },
                           ),
