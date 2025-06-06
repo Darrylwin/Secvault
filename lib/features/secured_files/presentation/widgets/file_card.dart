@@ -8,7 +8,7 @@ class FileCard extends StatelessWidget {
     required this.uploaAt,
     required this.onDownloadPressed,
     required this.onDeletePressed,
-    required this.onFileCardTap,
+    required this.onFileCardTapped,
   });
 
   final String fileExtension;
@@ -16,14 +16,14 @@ class FileCard extends StatelessWidget {
   final DateTime uploaAt;
   final VoidCallback onDownloadPressed;
   final VoidCallback onDeletePressed;
-  final VoidCallback onFileCardTap;
+  final VoidCallback onFileCardTapped;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: GestureDetector(
-        onTap: onFileCardTap,
+        onTap: onFileCardTapped,
         child: Card(
           elevation: 2,
           shadowColor: Colors.black12,

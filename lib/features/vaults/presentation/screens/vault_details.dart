@@ -1,12 +1,11 @@
-import 'dart:convert';
 import 'dart:io';
-
 import 'package:cross_file_picker/cross_file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:secvault/core/helpers/encryption_helper.dart';
 import 'package:secvault/features/secured_files/data/models/secured_file_model.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_bloc.dart';
 import 'package:secvault/features/secured_files/presentation/bloc/secured_file_event.dart';
@@ -35,6 +34,7 @@ class VaultDetails extends StatefulWidget {
 }
 
 class _VaultDetailsState extends State<VaultDetails> {
+  late final BlocListener<SecuredFileBloc, SecuredFileState> _blocListener;
 
   @override
   void initState() {
@@ -56,11 +56,11 @@ class _VaultDetailsState extends State<VaultDetails> {
 
   void _onFileCardTapped(String fileId) {
     context.read<SecuredFileBloc>().add(
-      DownloadSecuredFileEvent(
-        vaultId: widget.vaultId,
-        fileId: fileId,
-      ),
-    );
+          DownloadSecuredFileEvent(
+            vaultId: widget.vaultId,
+            fileId: fileId,
+          ),
+        );
   }
 
   Future<void> _openDownloadedFile(SecuredFileModel file) async {
@@ -69,9 +69,9 @@ class _VaultDetailsState extends State<VaultDetails> {
       final tempDir = await getTemporaryDirectory();
       final filePath = '${tempDir.path}/${file.fileName}';
 
-      //Ecrire les données dans un fichier temporaire
-      final decodedData = base64Decode(file.encryptedData);
-      await File(filePath).writeAsBytes(decodedData);
+      //décrypter les données
+      final decryptedData = EncryptionHelper.decryptData(file.encryptedData);
+      await File(filePath).writeAsBytes(decryptedData);
 
       //ouvrir le fichier avec l'application associée
       final result = await OpenFile.open(filePath);
@@ -371,7 +371,7 @@ class _VaultDetailsState extends State<VaultDetails> {
                               onDeletePressed: () =>
                                   _onDeletePressed(file.fileId),
                               onDownloadPressed: _onDownloadPressed,
-                              onFileCardTap: () =>
+                              onFileCardTapped: () =>
                                   _onFileCardTapped(file.fileId),
                             );
                           },
