@@ -80,12 +80,12 @@ class _VaultDetailsState extends State<VaultDetails> {
     try {
       debugPrint(
           'File to open: ${file.fileName}, encrypted size: ${file.encryptedData.length}');
+      debugPrint(
+          'encryptedData (start): ${file.encryptedData.substring(0, 30)}');
 
       String filePath;
 
-      // Different approach based on platform
       if (Platform.isWindows) {
-        // On Windows, use the user's TEMP folder directly
         final tempPath = '${Platform.environment['TEMP']}\\secvault_temp';
         final directory = Directory(tempPath);
         if (!await directory.exists()) {
@@ -93,14 +93,13 @@ class _VaultDetailsState extends State<VaultDetails> {
         }
         filePath = '$tempPath\\${file.fileName}';
       } else {
-        // On other platforms, use path_provider
         final tempDir = await getTemporaryDirectory();
         filePath = '${tempDir.path}/${file.fileName}';
       }
 
       debugPrint("Attempting to open file. Path: $filePath");
 
-      // Decrypt and write data
+      // Déchiffrement
       final decryptedData = EncryptionHelper.decryptData(file.encryptedData);
       debugPrint("Decrypted data size: ${decryptedData.length} bytes");
 
@@ -115,13 +114,11 @@ class _VaultDetailsState extends State<VaultDetails> {
         return;
       }
 
-      // Open the file
       if (Platform.isWindows) {
         await _openFileWithUrlLauncher(filePath);
       } else {
         final result = await OpenFile.open(filePath);
         debugPrint('Opening result: ${result.type} - ${result.message}');
-
         if (result.type != ResultType.done) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text("Error opening file: ${result.message}")),
